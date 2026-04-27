@@ -32,7 +32,7 @@ The author disclaims all liability — direct, indirect, incidental, or conseque
 
 ---
 
-## Important Licensing Information
+## Licensing Information
 
 **Examples License:**
 All examples in this repository are released under the **MIT License**. You are free to use, modify, and distribute them according to the MIT license terms.
