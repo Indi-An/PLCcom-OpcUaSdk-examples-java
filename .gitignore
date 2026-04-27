@@ -1,0 +1,32 @@
+# Maven build output
+target/
+*.class
+*.jar
+
+# IDE — IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# IDE — Eclipse
+.settings/
+.classpath
+.project
+bin/
+
+# IDE — VS Code
+.vscode/
+
+# OPC UA runtime artifacts (generated at runtime, not part of the source)
+pki/
+CertificateStores/
+
+# Workshop runtime output (CSV history stores etc.)
+history/
+event_history/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
