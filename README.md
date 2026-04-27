@@ -23,15 +23,6 @@ This makes your code **readable, maintainable, and independent of server-specifi
 
 ---
 
-## ⚠️ Important Safety Notice
-
-The examples in this repository are **for demonstration purposes only** and **must _not_** be used in production, safety-critical, or industrial environments without your own thorough review and validation.
-**Use at your own risk!** Deploying these examples in real systems may lead to personal injury, property damage, or environmental harm and is **strictly prohibited**.
-
-The author disclaims all liability — direct, indirect, incidental, or consequential — arising from the use or misuse of these examples.
-
----
-
 ## Licensing Information
 
 **Examples License:**
@@ -245,6 +236,15 @@ PLCcom-OpcUaSdk-examples-java/
 ├── LICENSE
 └── README.md
 ```
+
+---
+
+## ⚠️ Important Safety Notice
+
+The examples in this repository are **for demonstration purposes only** and **must _not_** be used in production, safety-critical, or industrial environments without your own thorough review and validation.
+**Use at your own risk!** Deploying these examples in real systems may lead to personal injury, property damage, or environmental harm and is **strictly prohibited**.
+
+The author disclaims all liability — direct, indirect, incidental, or consequential — arising from the use or misuse of these examples.
 
 ---
 
