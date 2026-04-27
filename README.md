@@ -21,6 +21,30 @@ client.writeValue(nodeId, 23.5);
 
 This makes your code **readable, maintainable, and independent of server-specific NodeId assignments**. Of course, classic NodeId-based access is fully supported too.
 
+---
+
+## ⚠️ Important Safety Notice
+
+The examples in this repository are **for demonstration purposes only** and **must _not_** be used in production, safety-critical, or industrial environments without your own thorough review and validation.
+**Use at your own risk!** Deploying these examples in real systems may lead to personal injury, property damage, or environmental harm and is **strictly prohibited**.
+
+The author disclaims all liability — direct, indirect, incidental, or consequential — arising from the use or misuse of these examples.
+
+---
+
+## Important Licensing Information
+
+**Examples License:**
+All examples in this repository are released under the **MIT License**. You are free to use, modify, and distribute them according to the MIT license terms.
+
+**PLCcom Library License:**
+The **PLCcom OPC UA SDK** itself is proprietary software and is **NOT** included under the MIT license. To use the library in your own projects you must acquire an appropriate license and accept the EULA. More information: [https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-overview/](https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-overview/)
+
+**Trial License:**
+A free trial license is available at the [PLCcom download page](https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/).
+
+---
+
 ## Overview of PLCcom OPC UA SDK for Java
 
 PLCcom OPC UA SDK is a highly optimized and modern SDK designed specifically for Java developers to provide convenient client and server access for OPC UA (Open Platform Communications Unified Architecture). The library is available as a Maven dependency — no native libraries, no API calls necessary.
@@ -155,7 +179,7 @@ Many client workshops are designed to work with a specific server workshop. Star
 ### 1. Clone this repository
 
 ```bash
-git clone https://github.com/indi-an/PLCcom-OpcUaSdk-examples-java.git
+git clone https://github.com/Indi-An/PLCcom-OpcUaSdk-examples-java.git
 cd PLCcom-OpcUaSdk-examples-java
 ```
 
@@ -182,10 +206,10 @@ Open the desired workshop class in your IDE and run its `main()` method directly
 
 ```bash
 # Example: run Server Workshop 11
-mvn exec:java -pl Server/Java -Dexec.mainClass=_11_SimpleServer
+mvn exec:java -pl Server -Dexec.mainClass=_11_SimpleServer
 
 # Example: run Client Workshop 21
-mvn exec:java -pl Client/Java -Dexec.mainClass=_21_DA_ReadWrite_by_NodeId
+mvn exec:java -pl Client -Dexec.mainClass=_21_ReadWriteByNodeId
 ```
 
 ---
@@ -195,39 +219,32 @@ mvn exec:java -pl Client/Java -Dexec.mainClass=_21_DA_ReadWrite_by_NodeId
 ```
 PLCcom-OpcUaSdk-examples-java/
 ├── Client/
-│   └── Java/
-│       └── src/main/java/        ← all client workshop classes
+│   ├── 1 First Steps/
+│   │   ├── 11_Discover_Server/
+│   │   └── ...
+│   ├── 2 Data Access/
+│   ├── 3 Alarm Conditions/
+│   ├── 4 Historical Data/
+│   ├── 5 Complex Datatypes/
+│   ├── 6 Simple Events/
+│   ├── 7 Reverse Connect/
+│   └── pom.xml
 ├── Server/
-│   └── Java/
-│       ├── src/main/java/        ← all server workshop classes
-│       └── src/main/resources/   ← PLCcom_Workshop_NodeSet.xml (WS 41)
-├── pom.xml                       ← parent POM (multi-module)
+│   ├── 1 Data Access/
+│   ├── 2 Alarms and Events/
+│   ├── 3 Historical Data/
+│   ├── 4 NodeSet Import/
+│   │   └── 41_NodeSet_Import/
+│   │       └── PLCcom_Workshop_NodeSet.xml
+│   ├── 5 Logging/
+│   ├── 6 Simple Events/
+│   ├── 7 Reverse Connect/
+│   └── pom.xml
+├── pom.xml          ← parent POM (multi-module)
 ├── .gitignore
 ├── LICENSE
 └── README.md
 ```
-
----
-
-## Important Licensing Information
-
-**Examples License:**
-All examples in this repository are released under the **MIT License**. You are free to use, modify, and distribute them according to the MIT license terms.
-
-**PLCcom Library License:**
-The **PLCcom OPC UA SDK** itself is proprietary software and is **NOT** included under the MIT license. To use the library in your own projects you must acquire an appropriate license and accept the EULA. More information: [https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-overview/](https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-overview/)
-
-**Trial License:**
-A free trial license is available at the [PLCcom download page](https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/).
-
----
-
-## ⚠️ Important Safety Notice
-
-The examples in this repository are **for demonstration purposes only** and **must _not_** be used in production, safety-critical, or industrial environments without your own thorough review and validation.
-**Use at your own risk!** Deploying these examples in real systems may lead to personal injury, property damage, or environmental harm and is **strictly prohibited**.
-
-The author disclaims all liability — direct, indirect, incidental, or consequential — arising from the use or misuse of these examples.
 
 ---
 
