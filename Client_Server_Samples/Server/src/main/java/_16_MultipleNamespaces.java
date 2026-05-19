@@ -1,0 +1,435 @@
+// MIT License
+// Copyright (c) Indi.An GmbH
+
+// ==============================================================================
+// PLCcom OPC UA Server SDK - Workshop 16: Multiple Namespaces
+//
+// Every node in OPC UA has a NodeId and a BrowseName, both of which belong
+// to a namespace. Namespaces prevent naming collisions when multiple vendors,
+// standards or subsystems share the same server.
+//
+// This workshop demonstrates:
+//   ns=0  OPC UA standard        - standard nodes (always present)
+//   ns=1  Local server            - server's own nodes (always present)
+//   ns=2  Company namespace       - company-wide type definitions
+//   ns=3  Plant A namespace       - nodes for Plant A
+//   ns=4  Plant B namespace       - nodes for Plant B
+//
+// Connect with any OPC UA client to: opc.tcp://localhost:48410
+// ==============================================================================
+
+import com.plccom.opc.ua.builtintypes.*;
+import com.plccom.opc.ua.core.*;
+import com.plccom.opc.ua.server.application.*;
+import com.plccom.opc.ua.server.application.UaServerNodes.*;
+
+public class _16_MultipleNamespaces {
+
+    public static void main(String[] args) throws Exception {
+
+        PLCcomConsole.open("Workshop 16 - Multiple Namespaces", 1000);
+
+        String licenseUser   = "<Enter your UserName here>";
+        String licenseSerial = "<Enter your Serial here>";
+
+        System.out.println("╔══════════════════════════════════════════════════════════════╗");
+        System.out.println("║  PLCcom OPC UA Server SDK - Workshop 16: Multiple Namespaces ║");
+        System.out.println("║                                                              ║");
+        System.out.println("║  This example demonstrates:                                  ║");
+        System.out.println("║    * Registering additional namespaces                       ║");
+        System.out.println("║    * Creating nodes in specific namespaces                   ║");
+        System.out.println("║    * Sharing ObjectTypes across namespaces                   ║");
+        System.out.println("║    * Two plants with identical structure but separate nodes  ║");
+        System.out.println("╚══════════════════════════════════════════════════════════════╝");
+        System.out.println();
+
+        UaServerConfiguration config = createConfig();
+        printConfig(config);
+
+
+        try (UaServer server = new UaServer(licenseUser, licenseSerial)) {
+
+            System.out.println("  License: " + server.getLicenceMessage());
+            System.out.println();
+
+            // Accepts all client certificates automatically - suitable for development.
+            // Remove this listener to activate PKI-based validation via the store above.
+            server.addCertificateValidationListener(e -> e.setAccept(true));
+
+            server.addValuesWrittenListener(items -> {
+                for (UaServer.UaWrittenItem item : items)
+                    System.out.println("  << OPC Write: " + item.getPath()
+                            + " (" + item.getNodeId() + ") = " + item.getValueAsString());
+            });
+
+            // WriteValidation — called BEFORE any client write is committed to the address space.
+            // All internal checks (AccessLevel, DataType, Permissions) have already passed.
+            // The handler receives ALL items of the write request as a batch.
+            // Set item.setStatusCode() to any Bad_* value to reject that specific item.
+            // If not handled or StatusCode remains Good, the write proceeds normally.
+            //
+            // You can also MODIFY the value before it is written by calling item.setValue().
+            // The modified value is then stored in the address space instead of the original.
+            //
+            // !! IMPORTANT — PERFORMANCE WARNING !!
+            // This handler runs synchronously on the server's write thread.
+            // Any blocking operation (device I/O, database, slow network) will stall
+            // the entire write request and can block other clients as well.
+            //
+            // If you need to forward the value to a device, prefer one of these patterns:
+            //   a) Accept immediately (Good) and forward asynchronously via CompletableFuture or a queue.
+            //      The OPC UA client gets a fast response; the device update happens in the background.
+            //   b) If you must wait for the device, always use a short timeout (e.g. 500 ms)
+            //      and return BadTimeout or BadNoCommunication if the device does not respond in time.
+            //
+            // Never block indefinitely inside this handler.
+            server.addWriteValidationListener(items -> {
+                for (UaServer.UaWriteValidationItem item : items) {
+                    item.setStatusCode(StatusCode.GOOD);
+                    System.out.println("  >> WriteValidation: " + item.getPath() + " = " + item.getValue());
+                }
+            });
+
+            server.addSessionListener(new UaServer.UaSessionListener() {
+                @Override
+                public void onSessionCreated(UaServer.UaSessionInfo s) {
+                    String name = s.getSessionName() != null ? s.getSessionName() : "(unnamed)";
+                    System.out.println("  >> Client connected:    \"" + name + "\"");
+                }
+                @Override
+                public void onSessionClosed(UaServer.UaSessionInfo s) {
+                    String name = s.getSessionName() != null ? s.getSessionName() : "(unnamed)";
+                    System.out.println("  << Client disconnected: \"" + name + "\"");
+                }
+            });
+
+            System.out.print("  Starting server ... ");
+            try {
+                server.start(config);
+            } catch (Exception ex) {
+                System.out.println("FAILED: " + ex.getMessage());
+                System.in.read();
+                PLCcomConsole.close();
+                return;
+            }
+            System.out.println("OK");
+            for (String addr : config.getBaseAddresses())
+                System.out.println("  Endpoint: " + addr);
+            System.out.println();
+
+            // =============================================================================
+            // Step 2: Register additional namespaces
+            // =============================================================================
+            System.out.println("── Registering namespaces ───────────────────────────────────");
+
+            int nsCompany = server.addNamespace("urn:mycompany:types");
+            int nsPlantA  = server.addNamespace("urn:mycompany:plant-a");
+            int nsPlantB  = server.addNamespace("urn:mycompany:plant-b");
+
+            System.out.printf("  ns=%d  urn:mycompany:types     (company-wide types)%n", nsCompany);
+            System.out.printf("  ns=%d  urn:mycompany:plant-a   (Plant A instances)%n", nsPlantA);
+            System.out.printf("  ns=%d  urn:mycompany:plant-b   (Plant B instances)%n", nsPlantB);
+            System.out.println();
+
+            int check = server.getNamespaceIndex("urn:mycompany:plant-a");
+            System.out.println("  GetNamespaceIndex(\"urn:mycompany:plant-a\") = " + check);
+            System.out.println();
+
+            // Default namespace nodes (ns=2) for comparison
+            System.out.println("── Default namespace nodes (ns=2) ───────────────────────────");
+            UaFolder defaultFolder = server.createFolder("DefaultNS", UaRolePermissions.WITHOUT_RESTRICTIONS);
+            UaVariable<Double> testValue1 = server.createVariable(defaultFolder, "TestValue1", UaRolePermissions.WITHOUT_RESTRICTIONS, Double.class, 42.0, false);
+            UaVariable<String> testValue2 = server.createVariable(defaultFolder, "TestValue2", UaRolePermissions.WITHOUT_RESTRICTIONS, String.class, "hello", false);
+            System.out.printf("  %-40s NodeId=%s%n", "DefaultNS",   defaultFolder.getNodeId());
+            System.out.printf("  %-40s NodeId=%s  = %.1f%n", "  TestValue1", testValue1.getNodeId(), testValue1.getValue());
+            System.out.printf("  %-40s NodeId=%s  = %s%n",   "  TestValue2", testValue2.getNodeId(), testValue2.getValue());
+            System.out.println();
+
+            // =============================================================================
+            // Step 3: Company-wide ObjectTypes in the company namespace
+            // =============================================================================
+            System.out.printf("── Company-wide ObjectTypes (ns=%d) ──────────────────────────%n", nsCompany);
+
+            NodeId reactorTypeId = server.createObjectType("ReactorType", nsCompany);
+            NodeId mixerTypeId   = server.createObjectType("MixerType", nsCompany);
+
+            System.out.println("  ReactorType  " + reactorTypeId);
+            System.out.println("  MixerType    " + mixerTypeId);
+            System.out.println();
+
+            // =============================================================================
+            // Step 4: Build Plant A in its own namespace
+            // =============================================================================
+            System.out.printf("── Plant A (ns=%d) ──────────────────────────────────────────%n", nsPlantA);
+
+            UaFolder plantA = server.createFolder("PlantA", UaRolePermissions.WITHOUT_RESTRICTIONS, nsPlantA);
+
+            UaObject reactorA = server.createObject(plantA, "Reactor", UaRolePermissions.WITHOUT_RESTRICTIONS, reactorTypeId);
+            UaVariable<Double> tempA  = server.createVariable(reactorA, "Temperature", UaRolePermissions.WITHOUT_RESTRICTIONS, Double.class, 85.0, false);
+            UaVariable<Double> pressA = server.createVariable(reactorA, "Pressure",    UaRolePermissions.WITHOUT_RESTRICTIONS, Double.class, 2.5,  false);
+
+            UaObject mixerA = server.createObject(plantA, "Mixer", UaRolePermissions.WITHOUT_RESTRICTIONS, mixerTypeId);
+            UaVariable<Double> speedA = server.createVariable(mixerA, "Speed", UaRolePermissions.WITHOUT_RESTRICTIONS, Double.class, 120.0, false);
+
+            System.out.printf("  %-40s NodeId=%s%n", "PlantA",                plantA.getNodeId());
+            System.out.printf("  %-40s NodeId=%s  = %.1f%n", "  Reactor/Temperature", tempA.getNodeId(),  tempA.getValue());
+            System.out.printf("  %-40s NodeId=%s  = %.1f%n", "  Reactor/Pressure",    pressA.getNodeId(), pressA.getValue());
+            System.out.printf("  %-40s NodeId=%s  = %.1f%n", "  Mixer/Speed",         speedA.getNodeId(), speedA.getValue());
+            System.out.println();
+
+            // =============================================================================
+            // Step 5: Build Plant B in its own namespace
+            // =============================================================================
+            System.out.printf("── Plant B (ns=%d) ──────────────────────────────────────────%n", nsPlantB);
+
+            UaFolder plantB = server.createFolder("PlantB", UaRolePermissions.WITHOUT_RESTRICTIONS, nsPlantB);
+
+            UaObject reactorB = server.createObject(plantB, "Reactor", UaRolePermissions.WITHOUT_RESTRICTIONS, reactorTypeId);
+            UaVariable<Double> tempB  = server.createVariable(reactorB, "Temperature", UaRolePermissions.WITHOUT_RESTRICTIONS, Double.class, 92.0, false);
+            UaVariable<Double> pressB = server.createVariable(reactorB, "Pressure",    UaRolePermissions.WITHOUT_RESTRICTIONS, Double.class, 3.1,  false);
+
+            UaObject mixerB = server.createObject(plantB, "Mixer", UaRolePermissions.WITHOUT_RESTRICTIONS, mixerTypeId);
+            UaVariable<Double> speedB = server.createVariable(mixerB, "Speed", UaRolePermissions.WITHOUT_RESTRICTIONS, Double.class, 80.0, false);
+
+            System.out.printf("  %-40s NodeId=%s%n", "PlantB",                plantB.getNodeId());
+            System.out.printf("  %-40s NodeId=%s  = %.1f%n", "  Reactor/Temperature", tempB.getNodeId(),  tempB.getValue());
+            System.out.printf("  %-40s NodeId=%s  = %.1f%n", "  Reactor/Pressure",    pressB.getNodeId(), pressB.getValue());
+            System.out.printf("  %-40s NodeId=%s  = %.1f%n", "  Mixer/Speed",         speedB.getNodeId(), speedB.getValue());
+            System.out.println();
+
+            // =============================================================================
+            // Step 6: Cross-namespace reading
+            // =============================================================================
+            System.out.println("── Cross-namespace GetValue ─────────────────────────────────");
+
+            Object tA = server.getValue("Objects.PlantA.Reactor.Temperature");
+            Object tB = server.getValue("Objects.PlantB.Reactor.Temperature");
+            System.out.println("  PlantA Reactor Temperature = " + tA);
+            System.out.println("  PlantB Reactor Temperature = " + tB);
+            System.out.println();
+
+            // =============================================================================
+            // Step 7: Run the server
+            // =============================================================================
+            System.out.println("╔══════════════════════════════════════════════════════════════╗");
+            System.out.println("║  Server is running. Connect with any OPC UA client to:       ║");
+            System.out.println("║  opc.tcp://localhost:48410                                   ║");
+            System.out.println("║                                                              ║");
+            System.out.println("║  Try:                                                        ║");
+            System.out.println("║  * Browse Objects -> PlantA -> Reactor -> Temperature        ║");
+            System.out.println("║  * Browse Objects -> PlantB -> Reactor -> Temperature        ║");
+            System.out.println("║  * Compare NodeIds: both have numeric IDs but different ns   ║");
+            System.out.println("║  * Compare BrowseNames: same name, different namespace index ║");
+            System.out.println("║  * Browse Types -> ObjectTypes -> ReactorType, MixerType     ║");
+            System.out.println("║  * Write PlantA/Reactor/Temperature and PlantB independently ║");
+            System.out.println("║                                                              ║");
+            System.out.println("║  Press ENTER to exit.                                        ║");
+            System.out.println("╚══════════════════════════════════════════════════════════════╝");
+            System.in.read();
+
+            System.out.println("  Server stopped.");
+        }
+        PLCcomConsole.close();
+    }
+
+    // =============================================================================
+    // Helper: createConfig
+    // =============================================================================
+    // Returns the server configuration. All available options are listed here
+    // with a description and the default value. Adjust to your needs.
+    private static UaServerConfiguration createConfig() throws Exception {
+        UaServerConfiguration config = new UaServerConfiguration();
+
+        // ── Application Identity ──────────────────────────────────────────────
+        // ApplicationName: human-readable name shown to connecting clients
+        //   and embedded in the server certificate.
+        config.setApplicationName("PLCcom Workshop 16 - Multiple Namespaces");
+
+        // ApplicationUri: globally unique identifier for this server instance.
+        //   Must match the URI in the server certificate.
+        //   Recommended format: urn:<host>:<company>:<product>
+        config.setApplicationUri("urn:localhost:PLCcom:Workshop:16");
+
+        // ProductUri: URI identifying the software product (not the instance).
+        //   Typically a URL pointing to the product page.
+        config.setProductUri("https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-overview/");
+
+        // NamespaceUri: URI for this server's application address space (ns=2).
+        //   Use a stable URI based on your company domain.
+        //   Default: null (auto-generated as ApplicationUri + "/nodes").
+        config.setNamespaceUri("http://indi-an.com/opcua/workshop/multiple-namespaces");
+
+        // ── ServerStatus/BuildInfo ────────────────────────────────────────────
+        // These values appear under Server/ServerStatus/BuildInfo in the OPC UA
+        // address space and identify the software to connecting clients.
+        // Default: empty string.
+        config.setManufacturerName("My Company GmbH");
+        config.setProductName("My OPC UA Server");
+        config.setSoftwareVersion("1.0.0");
+        config.setBuildNumber("42");
+
+        // ── Endpoints ─────────────────────────────────────────────────────────
+        // The URLs clients connect to. Multiple endpoints are supported.
+        //   opc.tcp   — binary protocol, best performance, recommended
+        //   opc.https — SOAP/XML over HTTPS, for firewall-friendly scenarios
+        // Default: empty (binds to all local interfaces on port 4840).
+        config.setBaseAddresses(java.util.Arrays.asList(
+                "opc.tcp://localhost:48410",
+                "opc.https://localhost:48411"));
+
+        // ── Security Policies ─────────────────────────────────────────────────
+        // Which encryption algorithms to offer on the endpoints.
+        // getRecommendedSecurityModes() returns:
+        //   None (no encryption, for development only)
+        //   Basic256Sha256, Aes128_Sha256_RsaOaep, Aes256_Sha256_RsaPss
+        //   each with Sign + SignAndEncrypt
+        config.setSecurityModes(UaServer.getRecommendedSecurityModes());
+
+        // ── User Authentication ───────────────────────────────────────────────
+        // Which authentication methods to accept from connecting clients.
+        //   Anonymous   — no credentials required
+        //   UserName    — username + password (see server.getUserManager())
+        //   Certificate — X.509 client certificate (see server.getUserManager())
+        // Default: Anonymous + SecureUsernamePassword.
+        config.setUserTokenPolicies(java.util.Arrays.asList(
+                UserTokenPolicy.ANONYMOUS));
+
+        // AutoAcceptUntrustedCertificates: skip client certificate validation.
+        // WARNING: only for development/testing — never use in production!
+        // Default: false.
+        config.setAutoAcceptUntrustedCertificates(false);
+
+        // ── Session & Connection ──────────────────────────────────────────────
+        // MaxSessionCount: maximum number of concurrent client sessions.
+        // Default: 100. 0 = unlimited.
+        config.setMaxSessionCount(100);
+
+        // ShutdownDelay: seconds the server waits for clients to disconnect
+        // gracefully when stop() is called. Default: 5.
+        config.setShutdownDelay(5);
+
+        // HttpsMutualTls: require the client TLS certificate to match the OPC UA
+        // application certificate sent in CreateSession. Default: false.
+        config.setHttpsMutualTls(false);
+
+        // ── Local Discovery Server (LDS) ──────────────────────────────────────
+        // RegisterWithDiscoveryServer: register with a LDS so that clients can
+        // discover this server via FindServers without knowing its URL.
+        // Default: false.
+        config.setRegisterWithDiscoveryServer(false);
+
+        // ── VendorServerInfo ──────────────────────────────────────────────────
+        // These values appear under Server/VendorServerInfo in the OPC UA
+        // address space and identify your product to connecting clients.
+        // null = the corresponding node is not created. Default: null.
+        config.setVendorName("My Company GmbH");
+        config.setVendorProductName("My OPC UA Server");
+        config.setVendorProductVersion("1.0.0");
+
+        // ── HTTPS TLS Policies ────────────────────────────────────────────────
+        // Which TLS versions to offer on the opc.https endpoint.
+        // IMPORTANT: if null, the opc.https endpoint is NOT activated (CRA compliance).
+        // Must be set explicitly to enable HTTPS.
+        config.setHttpsSecurityPolicies(java.util.Arrays.asList(
+                com.plccom.opc.ua.transport.security.HttpsSecurityPolicy.TLS_1_2_PFS,
+                com.plccom.opc.ua.transport.security.HttpsSecurityPolicy.TLS_1_3));
+
+        // ── OperationLimits ───────────────────────────────────────────────────
+        // These values appear under Server/ServerCapabilities/OperationLimits.
+        // Clients read these to size their request batches correctly.
+        // 0 = no limit imposed by this server (not recommended for production).
+        config.setMaxNodesPerRead(1000);                          // max nodes per Read request
+        config.setMaxNodesPerWrite(1000);                         // max nodes per Write request
+        config.setMaxNodesPerBrowse(1000);                        // max nodes per Browse/BrowseNext
+        config.setMaxNodesPerHistoryReadData(100);                // max nodes per HistoryRead (data)
+        config.setMaxNodesPerHistoryReadEvents(100);              // max nodes per HistoryRead (events)
+        config.setMaxNodesPerHistoryUpdateData(100);              // max nodes per HistoryUpdate (data)
+        config.setMaxNodesPerHistoryUpdateEvents(100);            // max nodes per HistoryUpdate (events)
+        config.setMaxNodesPerMethodCall(200);                     // max nodes per Method Call
+        config.setMaxNodesPerRegisterNodes(1000);                 // max nodes per RegisterNodes
+        config.setMaxNodesPerTranslateBrowsePathsToNodeIds(1000); // max nodes per TranslateBrowsePaths
+        config.setMaxNodesPerNodeManagement(1000);                // max nodes per AddNodes/DeleteNodes
+        config.setMaxMonitoredItemsPerCall(1000);                 // max items per CreateMonitoredItems
+        // AsConfigured (default) = endpoints use exactly the host from BaseAddresses
+        // NormalizeToHostname    = replace localhost/127.0.0.1 with the machine name
+        config.setEndpointHostMode(UaEndpointHostMode.AsConfigured);
+
+        // ── Certificate Store ─────────────────────────────────────────────────
+        // Build the certificate store: one APPLICATION cert for the OPC UA secure channel,
+        // plus one HTTPS cert per opc.https:// hostname derived from the base addresses.
+        // load() tries to load all certs from disk; getMissingOrExpired() returns any
+        // that are missing or expired so they can be rebuilt individually.
+        java.util.List<UaServerCertificate> certs = new java.util.ArrayList<>();
+        certs.add(new UaServerCertificate("./pki", "secretpassword", "PLCcom_Workshop_16",
+                config.getApplicationUri(), 720, "Indi.An GmbH",
+                UaServerCertificate.CertificateRole.APPLICATION));
+        for (String host : UaServerCertificateStore.extractHttpsHostnames(config.getBaseAddresses()))
+            certs.add(new UaServerCertificate("./pki", "secretpassword", host,
+                    "urn:" + host + ":https", 720, "Indi.An GmbH",
+                    UaServerCertificate.CertificateRole.HTTPS));
+
+        // Try to load all certificates from disk into the store.
+        // Certificates that are missing or cannot be read remain in the store
+        // but are marked as not ready (isReady() = false).
+        UaServerCertificateStore store = UaServerCertificateStore.load("./pki", certs);
+
+        // getMissingOrExpired() returns all certificates that are either:
+        //   - not present on disk (first run)
+        //   - expired (NotAfter < now)
+        //   - could not be loaded (wrong password, corrupt file)
+        // Each of these is rebuilt as a new self-signed certificate.
+        // build(true) overwrites any existing file - safe because we only
+        // reach this for certs that are missing or no longer valid.
+        for (UaServerCertificate missing : store.getMissingOrExpired())
+            missing.build(true);
+
+        // Hand the fully populated store to the configuration.
+        // UaServer.start() will use it to set up the secure channel and
+        // create the PKI directory structure (trusted/, rejected/, issuers/).
+        config.setCertificateStore(store);
+        return config;
+    }
+
+    private static void printConfig(UaServerConfiguration config) {
+        System.out.println("── Active Server Configuration ──────────────────────────────────────────────");
+        System.out.println("  ApplicationName  : " + config.getApplicationName());
+        System.out.println("  ApplicationUri   : " + config.getApplicationUri());
+        System.out.println("  NamespaceUri     : " + (config.getNamespaceUri() != null ? config.getNamespaceUri() : "(default)"));
+        System.out.println("  ManufacturerName : " + (config.getManufacturerName().isEmpty() ? "(not set)" : config.getManufacturerName()));
+        System.out.println("  ProductName      : " + (config.getProductName().isEmpty() ? "(not set)" : config.getProductName()));
+        System.out.println("  SoftwareVersion  : " + (config.getSoftwareVersion().isEmpty() ? "(not set)" : config.getSoftwareVersion()));
+        System.out.println("  BuildNumber      : " + (config.getBuildNumber().isEmpty() ? "(not set)" : config.getBuildNumber()));
+        System.out.println();
+        System.out.println("  Endpoints:");
+        for (String addr : config.getBaseAddresses())
+            System.out.println("    " + addr);
+        System.out.println();
+        System.out.println("  Certificate Store:");
+        if (config.getCertificateStore() != null)
+            System.out.println("    " + config.getCertificateStore());
+        else
+            System.out.println("    (not set)");
+        System.out.println();
+        System.out.println("  VendorServerInfo (Server/VendorServerInfo):");
+        System.out.println("    VendorName           = " + (config.getVendorName() != null ? config.getVendorName() : "(not set)"));
+        System.out.println("    VendorProductName    = " + (config.getVendorProductName() != null ? config.getVendorProductName() : "(not set)"));
+        System.out.println("    VendorProductVersion = " + (config.getVendorProductVersion() != null ? config.getVendorProductVersion() : "(not set)"));
+        System.out.println();
+        System.out.println("  OperationLimits (Server/ServerCapabilities/OperationLimits):");
+        System.out.printf("    MaxNodesPerRead                          = %d%n", config.getMaxNodesPerRead());
+        System.out.printf("    MaxNodesPerWrite                         = %d%n", config.getMaxNodesPerWrite());
+        System.out.printf("    MaxNodesPerBrowse                        = %d%n", config.getMaxNodesPerBrowse());
+        System.out.printf("    MaxNodesPerHistoryReadData               = %d%n", config.getMaxNodesPerHistoryReadData());
+        System.out.printf("    MaxNodesPerHistoryReadEvents             = %d%n", config.getMaxNodesPerHistoryReadEvents());
+        System.out.printf("    MaxNodesPerHistoryUpdateData             = %d%n", config.getMaxNodesPerHistoryUpdateData());
+        System.out.printf("    MaxNodesPerHistoryUpdateEvents           = %d%n", config.getMaxNodesPerHistoryUpdateEvents());
+        System.out.printf("    MaxNodesPerMethodCall                    = %d%n", config.getMaxNodesPerMethodCall());
+        System.out.printf("    MaxNodesPerRegisterNodes                 = %d%n", config.getMaxNodesPerRegisterNodes());
+        System.out.printf("    MaxNodesPerTranslateBrowsePathsToNodeIds = %d%n", config.getMaxNodesPerTranslateBrowsePathsToNodeIds());
+        System.out.printf("    MaxNodesPerNodeManagement                = %d%n", config.getMaxNodesPerNodeManagement());
+        System.out.printf("    MaxMonitoredItemsPerCall                 = %d%n", config.getMaxMonitoredItemsPerCall());
+        System.out.println("─────────────────────────────────────────────────────────────────────────────");
+        System.out.println();
+    }
+
+}

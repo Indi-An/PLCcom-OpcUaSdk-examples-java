@@ -196,11 +196,13 @@ mvn clean compile
 Open the desired workshop class in your IDE and run its `main()` method directly, or use Maven:
 
 ```bash
+cd Client_Server_Samples
+
 # Example: run Server Workshop 11
-mvn exec:java -pl Server -Dexec.mainClass=_11_SimpleServer
+mvn exec:java -Dexec.mainClass=_11_SimpleServer
 
 # Example: run Client Workshop 21
-mvn exec:java -pl Client -Dexec.mainClass=_21_ReadWriteByNodeId
+mvn exec:java -Dexec.mainClass=_21_ReadWriteByNodeId
 ```
 
 ---
@@ -209,29 +211,21 @@ mvn exec:java -pl Client -Dexec.mainClass=_21_ReadWriteByNodeId
 
 ```
 PLCcom-OpcUaSdk-examples-java/
-├── Client/
-│   ├── 1 First Steps/
-│   │   ├── 11_Discover_Server/
-│   │   └── ...
-│   ├── 2 Data Access/
-│   ├── 3 Alarm Conditions/
-│   ├── 4 Historical Data/
-│   ├── 5 Complex Datatypes/
-│   ├── 6 Simple Events/
-│   ├── 7 Reverse Connect/
-│   └── pom.xml
-├── Server/
-│   ├── 1 Data Access/
-│   ├── 2 Alarms and Events/
-│   ├── 3 Historical Data/
-│   ├── 4 NodeSet Import/
-│   │   └── 41_NodeSet_Import/
-│   │       └── PLCcom_Workshop_NodeSet.xml
-│   ├── 5 Logging/
-│   ├── 6 Simple Events/
-│   ├── 7 Reverse Connect/
-│   └── pom.xml
-├── pom.xml          ← parent POM (multi-module)
+├── Client_Server_Samples/
+│   ├── Client/
+│   │   ├── src/main/java/      ← all client workshop Java files
+│   │   │   └── README.md
+│   │   └── README.md
+│   ├── Server/
+│   │   ├── src/main/java/      ← all server workshop Java files
+│   │   │   ├── PLCcom_Workshop_NodeSet.xml
+│   │   │   └── README.md
+│   │   └── README.md
+│   ├── PLCcomConsole/
+│   │   ├── src/main/java/      ← PLCcomConsole.java
+│   │   └── README.md
+│   ├── pom.xml
+│   └── README.md
 ├── .gitignore
 ├── LICENSE
 └── README.md
