@@ -55,6 +55,8 @@
 // ==============================================================================
 
 import com.plccom.opc.ua.builtintypes.*;
+import com.plccom.opc.ua.client.application.UaCertificateLoadReason;
+import com.plccom.opc.ua.client.application.UaCertificateLoadResult;
 import com.plccom.opc.ua.core.*;
 import com.plccom.opc.ua.server.application.*;
 import com.plccom.opc.ua.server.application.UaServerNodes.*;
@@ -571,24 +573,94 @@ public class _19_AdvancedServer {
                     "urn:" + host + ":https", 720, "Indi.An GmbH",
                     UaServerCertificate.CertificateRole.HTTPS));
 
-        // Try to load all certificates from disk into the store.
-        // Certificates that are missing or cannot be read remain in the store
-        // but are marked as not ready (isReady() = false).
-        UaServerCertificateStore store = UaServerCertificateStore.load("./pki", certs);
 
-        // getMissingOrExpired() returns all certificates that are either:
-        //   - not present on disk (first run)
-        //   - expired (NotAfter < now)
-        //   - could not be loaded (wrong password, corrupt file)
-        // Each of these is rebuilt as a new self-signed certificate.
-        // build(true) overwrites any existing file - safe because we only
-        // reach this for certs that are missing or no longer valid.
-        for (UaServerCertificate missing : store.getMissingOrExpired())
-            missing.build(true);
+        // â”€â”€ Certificate loading with detailed error handling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        //
+        // loadWithResult() is the advanced alternative to load(). While load() silently
+        // returns null on any failure, loadWithResult() always returns a result object
+        // that tells you exactly WHY loading failed. This is important because the right
+        // action depends on the reason:
+        //
+        //   NOT_FOUND / DIRECTORY_NOT_FOUND  -> safe to create a new certificate
+        //   WRONG_PASSWORD                   -> do NOT overwrite -- fix the password first
+        //   KEY_FILE_NOT_FOUND               -> key is lost -- delete cert and restart
+        //   CORRUPT / INVALID_FORMAT         -> file is damaged -- safe to overwrite
+        //   EXPIRED (loaded but invalid)     -> rebuild with a new certificate
+        //
+        // This pattern prevents accidental data loss and makes certificate problems
+        // visible immediately instead of silently failing at connection time.
+        for (UaServerCertificate cert : certs) {
+            UaCertificateLoadResult<UaServerCertificate> result =
+                    UaServerCertificate.loadWithResult(
+                            cert.getPkiBase(), cert.getAlias(),
+                            cert.getPassword(), cert.getRole());
 
-        // Hand the fully populated store to the configuration.
+            // Certificate loaded successfully and still valid -- nothing to do.
+            if (result.isSuccess() && result.getCertificate().checkValidity())
+                continue;
+
+            // Determine the reason: either a load failure or an expired certificate.
+            UaCertificateLoadReason reason = result.isSuccess()
+                    ? UaCertificateLoadReason.UNEXPECTED  // loaded but expired
+                    : result.getFailureReason();
+
+            switch (reason) {
+
+                case NOT_FOUND:
+                case DIRECTORY_NOT_FOUND:
+                    // First run or PKI directory does not exist yet.
+                    // This is the normal case â€” create a new self-signed certificate.
+                    System.out.println("  [CERT] Creating new certificate: " + cert.getAlias());
+                    cert.build(true);
+                    break;
+
+                case WRONG_PASSWORD:
+                    // The certificate file exists but cannot be decrypted.
+                    // Do NOT overwrite â€” the existing certificate may still be trusted
+                    // by connected clients. Fix the password in createConfig() first.
+                    throw new IllegalStateException(
+                            "Wrong password for certificate '" + cert.getAlias() + "'.\n" +
+                            "Fix the password in createConfig() or delete the file manually:\n" +
+                            "  " + result.getExpectedCertFile());
+
+                case KEY_FILE_NOT_FOUND:
+                    // The certificate exists but the private key file is missing.
+                    // The key cannot be recovered â€” delete the certificate manually
+                    // and restart the server to generate a new key pair.
+                    throw new IllegalStateException(
+                            "Private key missing for certificate '" + cert.getAlias() + "'.\n" +
+                            "Delete the certificate file and restart to generate a new key pair:\n" +
+                            "  " + result.getExpectedCertFile());
+
+                case CORRUPT:
+                case INVALID_FORMAT:
+                    // The file exists but contains invalid or damaged data.
+                    // Overwrite with a new certificate and log a warning so the
+                    // administrator knows the old certificate was replaced.
+                    System.err.println("  [CERT] Warning: certificate '" + cert.getAlias()
+                            + "' is corrupt â€” rebuilding.");
+                    System.err.println("  Details: " + result.getFailureMessage());
+                    cert.build(true);
+                    break;
+
+                case UNEXPECTED:
+                default:
+                    // Certificate was loaded but has expired, or an unexpected error occurred.
+                    // Rebuild with a new self-signed certificate.
+                    if (result.isSuccess())
+                        System.out.println("  [CERT] Certificate expired, rebuilding: " + cert.getAlias());
+                    else
+                        System.err.println("  [CERT] Unexpected load error for '" + cert.getAlias()
+                                + "': " + result.getFailureMessage() + " â€” rebuilding.");
+                    cert.build(true);
+                    break;
+            }
+        }
+
+        // All certificates are now ready. Build the store and hand it to the configuration.
         // UaServer.start() will use it to set up the secure channel and
         // create the PKI directory structure (trusted/, rejected/, issuers/).
+        UaServerCertificateStore store = new UaServerCertificateStore("./pki", certs);
         config.setCertificateStore(store);
         return config;
     }
