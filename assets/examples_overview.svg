@@ -15,7 +15,6 @@
       .text { font: 12px Verdana, Arial, sans-serif; fill: #202020; }
       .small { font: 11px Verdana, Arial, sans-serif; fill: #505050; }
       .line { stroke: #001489; stroke-width: 2; fill: none; marker-end: url(#arrow); }
-      .dash { stroke: #9AA3B2; stroke-width: 1.3; stroke-dasharray: 5 4; fill: none; }
       .middle { text-anchor: middle; dominant-baseline: middle; }
     ]]></style>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -68,9 +67,6 @@
   <path class="line" d="M228 212 C260 212, 268 312, 294 312"/>
   <path class="line" d="M586 158 H670"/>
   <path class="line" d="M586 312 H670"/>
-  <path class="dash" d="M228 160 C260 92, 286 92, 300 112"/>
-  <path class="dash" d="M228 224 C258 288, 282 292, 300 300"/>
-
   <text class="small" x="246" y="156">modules</text>
   <text class="small" x="610" y="144">depends on</text>
   <text class="small" x="610" y="298">depends on</text>
