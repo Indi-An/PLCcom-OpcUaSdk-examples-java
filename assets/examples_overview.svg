@@ -67,7 +67,7 @@
   <path class="line" d="M228 212 C260 212, 268 312, 294 312"/>
   <path class="line" d="M586 158 H670"/>
   <path class="line" d="M586 312 H670"/>
-  <text class="small" x="246" y="156">modules</text>
-  <text class="small" x="610" y="144">depends on</text>
-  <text class="small" x="610" y="298">depends on</text>
+  <text class="small" x="238" y="156">modules</text>
+  <text class="small" x="598" y="144">depends on</text>
+  <text class="small" x="598" y="298">depends on</text>
 </svg>
