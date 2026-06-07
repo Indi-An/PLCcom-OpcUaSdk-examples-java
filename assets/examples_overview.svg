@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="360" viewBox="0 0 920 360" role="img" aria-labelledby="title desc">
+  <title id="title">PLCcom OPC UA SDK for Java workshop repository overview</title>
+  <desc id="desc">The repository contains a Maven reactor with a shared PLCcom Console project, client and server workshops for the PLCcom OPC UA SDK, and PubSub workshops for the PLCcom PubSub add-on.</desc>
+  <defs>
+    <style type="text/css"><![CDATA[
+      .bg { fill: #ffffff; }
+      .panel { fill: #F7F8FB; stroke: #D6D9E0; stroke-width: 1.2; }
+      .module { fill: #EEF3FF; stroke: #001489; stroke-width: 1.5; }
+      .soft { fill: #ffffff; stroke: #D6D9E0; stroke-width: 1.1; }
+      .title { font: bold 17px Verdana, Arial, sans-serif; fill: #001489; }
+      .subtitle { font: 12px Verdana, Arial, sans-serif; fill: #505050; }
+      .label { font: bold 13px Verdana, Arial, sans-serif; fill: #202020; }
+      .blueLabel { font: bold 13px Verdana, Arial, sans-serif; fill: #001489; }
+      .text { font: 12px Verdana, Arial, sans-serif; fill: #202020; }
+      .small { font: 11px Verdana, Arial, sans-serif; fill: #505050; }
+      .line { stroke: #001489; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .thin { stroke: #9AA3B2; stroke-width: 1.4; fill: none; }
+      .dash { stroke: #9AA3B2; stroke-width: 1.4; stroke-dasharray: 5 4; fill: none; }
+      .middle { text-anchor: middle; dominant-baseline: middle; }
+    ]]></style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#001489"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="920" height="360"/>
+
+  <text class="title" x="32" y="34">PLCcom OPC UA SDK for Java - Workshop Repository</text>
+  <text class="subtitle" x="32" y="56">One Maven reactor builds the shared console helper, the client/server workshops, and the PubSub add-on workshops.</text>
+
+  <rect class="panel" x="34" y="90" width="192" height="174" rx="5"/>
+  <text class="blueLabel" x="58" y="122">Maven Reactor</text>
+  <text class="text" x="58" y="150">PLCcom.Console</text>
+  <text class="text" x="58" y="174">Client_Server_Samples</text>
+  <text class="text" x="58" y="198">PubSub_Samples</text>
+  <text class="small" x="58" y="232">Build all examples from</text>
+  <text class="small" x="58" y="249">the repository root.</text>
+
+  <rect class="module" x="306" y="78" width="278" height="112" rx="6"/>
+  <text class="blueLabel" x="330" y="110">Client / Server Workshops</text>
+  <rect class="soft" x="330" y="130" width="100" height="42" rx="4"/>
+  <text class="text middle" x="380" y="151">Client</text>
+  <rect class="soft" x="460" y="130" width="100" height="42" rx="4"/>
+  <text class="text middle" x="510" y="151">Server</text>
+  <text class="small" x="330" y="180">Discovery, sessions and data access</text>
+  <text class="small" x="330" y="197">Alarms, history and events</text>
+
+  <rect class="module" x="306" y="222" width="278" height="112" rx="6"/>
+  <text class="blueLabel" x="330" y="254">PubSub Workshops</text>
+  <rect class="soft" x="330" y="274" width="100" height="42" rx="4"/>
+  <text class="text middle" x="380" y="295">Publisher</text>
+  <rect class="soft" x="460" y="274" width="100" height="42" rx="4"/>
+  <text class="text middle" x="510" y="295">Subscriber</text>
+  <text class="small" x="330" y="324">UDP, MQTT and TLS transports</text>
+  <text class="small" x="330" y="341">UADP and JSON encoding</text>
+
+  <rect class="panel" x="672" y="80" width="214" height="126" rx="5"/>
+  <text class="blueLabel" x="696" y="112">PLCcom OPC UA SDK</text>
+  <text class="text" x="696" y="140">UaClient and UaServer</text>
+  <text class="text" x="696" y="162">OPC UA stack</text>
+  <text class="text" x="696" y="184">PKI and security</text>
+
+  <rect class="panel" x="672" y="230" width="214" height="86" rx="5"/>
+  <text class="blueLabel" x="696" y="262">PLCcom PubSub Add-on</text>
+  <text class="text" x="696" y="290">Uses the SDK stack</text>
+  <text class="text" x="696" y="310">and PLCcom MQTT client</text>
+
+  <rect class="soft" x="300" y="22" width="312" height="50" rx="4"/>
+  <text class="small middle" x="456" y="40">Shared PLCcom.Console helper</text>
+  <text class="small middle" x="456" y="57">for readable workshop output</text>
+
+  <path class="line" d="M226 166 H300"/>
+  <path class="line" d="M226 204 C260 204, 268 278, 300 278"/>
+  <path class="line" d="M584 134 H666"/>
+  <path class="line" d="M584 278 H666"/>
+  <path class="dash" d="M456 72 V78"/>
+  <path class="dash" d="M456 72 C456 188, 456 194, 456 222"/>
+
+  <text class="small" x="242" y="151">modules</text>
+  <text class="small" x="604" y="119">depends on</text>
+  <text class="small" x="604" y="263">depends on</text>
+</svg>

@@ -6,9 +6,7 @@ This repository provides hands-on workshop examples for developers using the **P
 
 ## Architecture Overview
 
-<img src="assets/sdk_overview.svg" width="920" alt="PLCcom OPC UA SDK for Java overview">
-
-<img src="assets/pubsub_overview.svg" width="920" alt="PLCcom OPC UA PubSub SDK for Java overview">
+<img src="assets/examples_overview.svg" width="920" alt="PLCcom OPC UA SDK for Java workshop repository overview">
 
 ## Easy to Use — Address Nodes by Path or NodeId
 
@@ -254,24 +252,33 @@ mvn exec:java -Dexec.mainClass=_11_UadpUnicastPublisher
 
 ```
 PLCcom-OpcUaSdk-examples-java/
-├── PLCcom.Console/              ← shared Maven project for the workshop console window
-├── PubSub_Samples/              ← OPC UA PubSub add-on workshops
-├── Client_Server_Samples/
-│   ├── Client/
-│   │   ├── src/main/java/      ← all client workshop Java files
-│   │   │   └── README.md
-│   │   └── README.md
-│   ├── Server/
-│   │   ├── src/main/java/      ← all server workshop Java files
-│   │   │   ├── PLCcom_Workshop_NodeSet.xml
-│   │   │   └── README.md
-│   │   └── README.md
-│   ├── pom.xml
-│   └── README.md
-├── pom.xml                      ← Maven reactor build for all projects
-├── .gitignore
-├── LICENSE
-└── README.md
+|-- PLCcom.Console/              <- shared Maven project for the workshop console window
+|   |-- src/main/java/
+|   |-- pom.xml
+|   `-- README.md
+|-- Client_Server_Samples/
+|   |-- Client/
+|   |   |-- src/main/java/       <- all client workshop Java files
+|   |   |-- README.md
+|   |   `-- src/main/java/README.md
+|   |-- Server/
+|   |   |-- src/main/java/       <- all server workshop Java files
+|   |   |-- README.md
+|   |   `-- src/main/java/README.md
+|   |-- pom.xml
+|   `-- README.md
+|-- PubSub_Samples/
+|   |-- src/main/java/           <- all PubSub publisher and subscriber workshops
+|   |-- pom.xml
+|   `-- README.md
+|-- assets/
+|   |-- examples_overview.svg    <- overview used by this README
+|   |-- sdk_overview.svg         <- client/server overview used by Client_Server_Samples
+|   `-- pubsub_overview.svg      <- PubSub overview used by PubSub_Samples
+|-- pom.xml                      <- Maven reactor build for all projects
+|-- .gitignore
+|-- LICENSE
+`-- README.md
 ```
 
 ---
