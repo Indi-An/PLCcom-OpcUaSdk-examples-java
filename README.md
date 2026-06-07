@@ -6,7 +6,7 @@ This repository provides hands-on workshop examples for developers using the **P
 
 ## Architecture Overview
 
-<img src="assets/examples_overview.svg" width="920" alt="PLCcom OPC UA SDK for Java workshop repository overview">
+<img src="assets/plccom-opc-overview.png" width="920" alt="PLCcom OPC UA SDK for Java workshop repository overview">
 
 ## Easy to Use — Address Nodes by Path or NodeId
 
@@ -272,7 +272,7 @@ PLCcom-OpcUaSdk-examples-java/
 |   |-- pom.xml
 |   `-- README.md
 |-- assets/
-|   |-- examples_overview.svg    <- overview used by this README
+|   |-- plccom-opc-overview.png  <- overview used by this README
 |   |-- sdk_overview.svg         <- client/server overview used by Client_Server_Samples
 |   `-- pubsub_overview.svg      <- PubSub overview used by PubSub_Samples
 |-- pom.xml                      <- Maven reactor build for all projects
