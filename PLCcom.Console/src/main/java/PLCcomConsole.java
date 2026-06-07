@@ -53,7 +53,9 @@ public class PLCcomConsole {
     private static final Color FG_PROMPT   = new Color(19, 161, 14);
     private static final Color INPUT_BG    = new Color(30, 30, 30);
     private static final Color BORDER_COLOR = new Color(63, 63, 70);
-    private static final Font  CONSOLE_FONT = new Font("Consolas", Font.PLAIN, 13);
+    private static final int DEFAULT_FONT_SIZE = 15;
+    private static final Font  CONSOLE_FONT =
+            new Font("Consolas", Font.PLAIN, configuredFontSize());
 
     // ── Configuration ─────────────────────────────────────────────────────────
     private static int maxLines = 1000;
@@ -104,6 +106,8 @@ public class PLCcomConsole {
     /**
      * Replaces the last line in the console with the given text.
      * Equivalent to Console.Write("\r...") in C#.
+     *
+     * @param text replacement text
      */
     public static void replaceLastLine(String text) {
         SwingUtilities.invokeLater(() -> {
@@ -130,6 +134,8 @@ public class PLCcomConsole {
     /**
      * Prints a line to the console in the default output color.
      * Equivalent to System.out.println(text).
+     *
+     * @param text text to print
      */
     public static void println(String text) {
         System.out.println(text);
@@ -380,5 +386,20 @@ public class PLCcomConsole {
                 textPane.setCaretPosition(doc.getLength());
             } catch (BadLocationException ignored) { }
         });
+    }
+
+    private static int configuredFontSize() {
+        String value = System.getProperty("plccom.console.fontSize");
+        if (value == null || value.trim().isEmpty()) {
+            return DEFAULT_FONT_SIZE;
+        }
+        try {
+            int fontSize = Integer.parseInt(value.trim());
+            if (fontSize >= 8 && fontSize <= 48) {
+                return fontSize;
+            }
+        } catch (NumberFormatException ignored) {
+        }
+        return DEFAULT_FONT_SIZE;
     }
 }

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="300" viewBox="0 0 920 300" role="img" aria-labelledby="title desc">
+  <title id="title">OPC UA PubSub overview</title>
+  <desc id="desc">A PLCcom OPC UA PubSub Publisher sends DataSet messages through UDP or MQTT to one or more Subscribers. Optional discovery exchanges DataSetMetaData.</desc>
+  <defs>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#001489"/>
+    </marker>
+    <marker id="arrow-gray" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#666666"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="920" height="300" fill="#FFFFFF"/>
+
+  <text x="30" y="34" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="18" font-weight="bold" fill="#001489">
+    OPC UA PubSub with the PLCcom PubSub SDK
+  </text>
+  <text x="30" y="58" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="12" fill="#505050">
+    A publisher sends DataSet messages. One or more subscribers receive the values through the selected transport.
+  </text>
+
+  <rect x="40" y="92" width="210" height="128" rx="4" ry="4" fill="#F7F8FB" stroke="#001489" stroke-width="1.5"/>
+  <text x="64" y="124" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" fill="#001489">UaPublisher</text>
+  <text x="64" y="150" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="12" fill="#202020">PublishedDataSet</text>
+  <text x="64" y="171" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="12" fill="#202020">Fields by logical name</text>
+  <text x="64" y="192" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="12" fill="#202020">Start(), WriteValue()</text>
+
+  <rect x="348" y="92" width="224" height="128" rx="4" ry="4" fill="#FFFFFF" stroke="#D6D9E0" stroke-width="1.5"/>
+  <text x="389" y="124" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" fill="#001489">Transport</text>
+  <text x="383" y="150" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="12" fill="#202020">UDP unicast / multicast / broadcast</text>
+  <text x="383" y="171" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="12" fill="#202020">MQTT UADP / MQTT JSON</text>
+  <text x="383" y="192" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="12" fill="#202020">Secure MQTT with TLS</text>
+
+  <rect x="670" y="82" width="220" height="82" rx="4" ry="4" fill="#F7F8FB" stroke="#001489" stroke-width="1.5"/>
+  <text x="696" y="113" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" fill="#001489">UaSubscriber</text>
+  <text x="696" y="139" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="12" fill="#202020">DataReceived events</text>
+
+  <rect x="670" y="188" width="220" height="82" rx="4" ry="4" fill="#F7F8FB" stroke="#001489" stroke-width="1.5"/>
+  <text x="696" y="219" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" fill="#001489">UaSubscriber</text>
+  <text x="696" y="245" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="12" fill="#202020">Named field values</text>
+
+  <line x1="250" y1="156" x2="346" y2="156" stroke="#001489" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <line x1="572" y1="126" x2="668" y2="126" stroke="#001489" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <line x1="572" y1="188" x2="668" y2="228" stroke="#001489" stroke-width="2" marker-end="url(#arrow-blue)"/>
+
+  <text x="269" y="143" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="11" fill="#001489">DataSet messages</text>
+  <text x="588" y="113" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="11" fill="#001489">one-to-many</text>
+
+  <path d="M670 262 C520 288, 255 286, 146 224" fill="none" stroke="#666666" stroke-width="1.5" stroke-dasharray="6,5" marker-end="url(#arrow-gray)"/>
+  <text x="298" y="274" font-family="Verdana, Arial, Helvetica, sans-serif" font-size="11" fill="#505050">
+    optional discovery: DataSetMetaData request and response
+  </text>
+</svg>

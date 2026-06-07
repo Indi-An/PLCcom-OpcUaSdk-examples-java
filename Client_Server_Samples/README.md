@@ -6,7 +6,12 @@ This folder contains all hands-on workshop examples for the **PLCcom OPC UA SDK 
 
 - **Client/** — OPC UA client workshops: connect, browse, read/write, subscriptions, alarms, history, events
 - **Server/** — OPC UA server workshops: data access, alarms, history, events, reverse connect
-- **PLCcomConsole/** — shared Swing console window helper used by all workshops
+
+The shared Swing console window helper is provided by the sibling Maven project `../PLCcom.Console`.
+
+## Architecture Overview
+
+<img src="../assets/sdk_overview.svg" width="920" alt="PLCcom OPC UA SDK for Java overview">
 
 ---
 
@@ -50,27 +55,37 @@ mvn exec:java -Dexec.mainClass=_21_ReadWriteByNodeId
 
 Many client workshops are designed to work with a specific server workshop. Start the server first, then run the matching client:
 
-| Client | Server | Topic |
-|--------|--------|-------|
-| 11 Discover Server | *any server* | Endpoint discovery |
-| 12 Connect Endpoint | 11 Simple Server | Basic connection |
-| 13 Connect with User Auth | 12a User Authentication | Username/password login |
-| 14 Connect with Cert Auth | 12a User Authentication | Certificate login |
-| 15–16 Browse | 11 Simple Server | Browse address space |
-| 21–22 Read/Write | 11 Simple Server | Data Access |
-| 23 Monitoring Items | 11 Simple Server | Subscriptions |
-| 24 Simple Method Calls | 13 Methods | Method calls |
-| 25 Advanced Calls with Structs | 13 Methods | Nested struct arguments |
-| 26 Read Attributes | 14 Variables and Arrays | Node attributes |
-| 27 Registered Read/Write | 11 Simple Server | Registered nodes |
-| 31–33 Alarm Conditions | 21 Alarm Conditions | Alarms |
-| 41 Historical Data | 31 Historical Access | Read history |
-| 42 Historical Data Update | 32 Historical Update | Write history |
-| 43 Read Historical Events | 33 Historical Events | Event history |
-| 44 Monitoring Historical Events | 33 Historical Events | Event history subscription |
-| 51 Complex Types | 15 Custom Types | Structured data types |
-| 61 Simple Events | 61 Simple Events | Events |
-| 71 Reverse Connect | 71 Reverse Connect | Firewall traversal |
+**First connection**
+
+- `11 Discover Server` works with any reachable OPC UA server and shows endpoint discovery.
+- `12 Connect Endpoint` pairs with `11 Simple Server` and shows the full connect/disconnect lifecycle.
+- `13 Connect with User Auth` pairs with `12a User Authentication` for username/password login.
+- `14 Connect with Cert Auth` pairs with `12a User Authentication` for certificate login.
+
+**Browse, Data Access and Methods**
+
+- `15 Browse by NodeId` and `16 Browse by Path` pair with `11 Simple Server`.
+- `21 Read/Write by NodeId` and `22 Read/Write by Path` pair with `11 Simple Server`.
+- `23 Monitoring Items` pairs with `11 Simple Server` and shows subscriptions.
+- `24 Simple Method Calls` and `25 Advanced Calls with Structs` pair with `13 Methods`.
+- `26 Read Attributes` pairs with `14 Variables and Arrays`.
+- `27 Registered Read/Write` pairs with `11 Simple Server`.
+
+**Complex Types**
+
+- `51 Complex Types` pairs with `15 Custom Types`.
+
+**Alarms, History and Events**
+
+- `31 Incoming Alarms`, `32 Alarm List` and `33 Alarm Conditions` pair with `21 Alarm Conditions`.
+- `41 Historical Data` pairs with `31 Historical Access`.
+- `42 Historical Data Update` pairs with `32 Historical Update`.
+- `43 Read Historical Events` and `44 Monitoring Historical Events` pair with `33 Historical Events`.
+- `61 Simple Events` pairs with `61 Simple Events`.
+
+**Reverse Connect**
+
+- `71 Reverse Connect` pairs with `71 Reverse Connect`.
 
 ---
 

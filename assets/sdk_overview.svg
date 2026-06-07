@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="360" viewBox="0 0 920 360" role="img" aria-labelledby="title desc">
+  <title id="title">PLCcom OPC UA SDK for Java overview</title>
+  <desc id="desc">Java applications use the PLCcom UaClient and UaServer APIs. The SDK stack handles OPC UA communication and PKI. External OPC UA servers and clients connect through standard OPC UA endpoints.</desc>
+  <defs>
+    <style type="text/css"><![CDATA[
+      .bg { fill: #ffffff; }
+      .panel { fill: #F7F8FB; stroke: #D6D9E0; stroke-width: 1.2; }
+      .sdk { fill: #EEF3FF; stroke: #001489; stroke-width: 1.4; }
+      .tag { fill: #ffffff; stroke: #D6D9E0; stroke-width: 1; }
+      .accent { fill: #001489; }
+      .muted { fill: #505050; }
+      .line { stroke: #001489; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .thin { stroke: #9AA3B2; stroke-width: 1.4; fill: none; }
+      .title { font: bold 16px Verdana, Arial, sans-serif; fill: #001489; }
+      .label { font: bold 13px Verdana, Arial, sans-serif; fill: #202020; }
+      .text { font: 12px Verdana, Arial, sans-serif; fill: #202020; }
+      .small { font: 11px Verdana, Arial, sans-serif; fill: #505050; }
+      .middle { text-anchor: middle; dominant-baseline: middle; }
+    ]]></style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#001489"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="920" height="360"/>
+
+  <text class="title" x="32" y="34">PLCcom OPC UA SDK for Java</text>
+  <text class="small" x="32" y="54">High-level client and server APIs on top of the PLCcom OPC UA stack</text>
+
+  <rect class="panel" x="34" y="88" width="190" height="126" rx="4"/>
+  <text class="label" x="54" y="116">Java Client App</text>
+  <text class="text" x="54" y="142">Read / Write</text>
+  <text class="text" x="54" y="162">Browse</text>
+  <text class="text" x="54" y="182">Subscriptions</text>
+
+  <rect class="panel" x="34" y="238" width="190" height="78" rx="4"/>
+  <text class="label" x="54" y="266">Java Server App</text>
+  <text class="text" x="54" y="292">Own address space</text>
+
+  <rect class="sdk" x="292" y="78" width="286" height="238" rx="6"/>
+  <text class="label" x="316" y="110">PLCcom SDK API</text>
+
+  <rect class="bg" x="316" y="132" width="108" height="54" rx="4" stroke="#D6D9E0"/>
+  <text class="text" x="334" y="154">UaClient</text>
+  <text class="small" x="334" y="174">Session API</text>
+
+  <rect class="bg" x="446" y="132" width="108" height="54" rx="4" stroke="#D6D9E0"/>
+  <text class="text" x="464" y="154">UaServer</text>
+  <text class="small" x="464" y="174">Endpoint API</text>
+
+  <rect class="bg" x="316" y="210" width="238" height="70" rx="4" stroke="#D6D9E0"/>
+  <text class="text" x="334" y="234">OPC UA stack</text>
+  <text class="small" x="334" y="255">Encoding, sessions, services, security</text>
+
+  <rect class="panel" x="684" y="88" width="204" height="126" rx="4"/>
+  <text class="label" x="704" y="116">External OPC UA Server</text>
+  <text class="text" x="704" y="142">Endpoints</text>
+  <text class="text" x="704" y="162">Address space</text>
+  <text class="text" x="704" y="182">Methods, alarms, history</text>
+
+  <rect class="panel" x="684" y="238" width="204" height="78" rx="4"/>
+  <text class="label" x="704" y="266">External OPC UA Client</text>
+  <text class="text" x="704" y="292">Connects to your server</text>
+
+  <rect class="panel" x="292" y="326" width="286" height="34" rx="4"/>
+  <text class="small middle" x="435" y="343">PKI stores: own / private / trusted / rejected</text>
+
+  <path class="line" d="M224 146 H286"/>
+  <path class="line" d="M578 146 H678"/>
+  <path class="line" d="M224 278 H286"/>
+  <path class="line" d="M578 278 H678"/>
+  <path class="thin" d="M435 316 V326"/>
+
+  <rect class="tag" x="227" y="121" width="62" height="20" rx="3"/>
+  <text class="small middle" x="258" y="131">configure</text>
+
+  <rect class="tag" x="587" y="121" width="88" height="20" rx="3"/>
+  <text class="small middle" x="631" y="131">opc.tcp / https</text>
+
+  <rect class="tag" x="230" y="253" width="52" height="20" rx="3"/>
+  <text class="small middle" x="256" y="263">expose</text>
+
+  <rect class="tag" x="597" y="253" width="68" height="20" rx="3"/>
+  <text class="small middle" x="631" y="263">endpoint</text>
+</svg>
