@@ -69,9 +69,9 @@ public class _19_AdvancedServer {
 
         PLCcomConsole.open("Workshop 19 - Advanced Server", 1000);
 
-        String licenseUser   = "<Enter your UserName here>";
-        String licenseSerial = "<Enter your Serial here>";
-
+        String licenseUser   = "test";
+        String licenseSerial = "59397-5851255-109248-2468276";
+        
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
         System.out.println("║  PLCcom OPC UA Server SDK - Workshop 19: Advanced Server     ║");
         System.out.println("║                                                              ║");
@@ -560,21 +560,30 @@ public class _19_AdvancedServer {
         config.setEndpointHostMode(UaEndpointHostMode.AsConfigured);
 
         // ── Certificate Store ─────────────────────────────────────────────────
-        // Build the certificate store: one APPLICATION cert for the OPC UA secure channel,
-        // plus one HTTPS cert per opc.https:// hostname derived from the base addresses.
-        // load() tries to load all certs from disk; getMissingOrExpired() returns any
-        // that are missing or expired so they can be rebuilt individually.
+        // The server needs two certificates:
+        //   * one APPLICATION certificate for the OPC UA secure channel, and
+        //   * one default HTTPS/TLS certificate presented on the opc.https endpoint(s).
         java.util.List<UaServerCertificate> certs = new java.util.ArrayList<>();
-        certs.add(new UaServerCertificate("./pki", "secretpassword", "PLCcom_Workshop_19",
-                config.getApplicationUri(), 720, "Indi.An GmbH",
-                UaServerCertificate.CertificateRole.APPLICATION));
-        for (String host : UaServerCertificateStore.extractHttpsHostnames(config.getBaseAddresses()))
-            certs.add(new UaServerCertificate("./pki", "secretpassword", host,
-                    "urn:" + host + ":https", 720, "Indi.An GmbH",
-                    UaServerCertificate.CertificateRole.HTTPS));
+
+        UaServerCertificate appCert = new UaServerCertificate("./pki", "secretpassword",
+                "PLCcom_Workshop_19", config.getApplicationUri(), 720, "Indi.An GmbH",
+                UaServerCertificate.CertificateRole.APPLICATION);
+        certs.add(appCert);
+
+        // The HTTPS certificate's SubjectAltName is generated automatically (localhost + machine
+        // name + IP addresses), so it fits any local address. This is also where you would plug in
+        // an officially issued certificate instead of the self-signed one.
+        UaServerCertificate httpsDefault = new UaServerCertificate("./pki", "secretpassword",
+                "https-default", "urn:https-default", 720, "Indi.An GmbH",
+                UaServerCertificate.CertificateRole.HTTPS);
+        certs.add(httpsDefault);
+        // Present this certificate on every opc.https port. To force a different certificate on a
+        // specific port — e.g. an externally port-forwarded port that must present an official
+        // domain certificate — use: config.assignHttpsCertificateToPort(48443, officialCert);
+        config.setDefaultHttpsCertificate(httpsDefault);
 
 
-        // â”€â”€ Certificate loading with detailed error handling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Certificate loading with detailed error handling ──────────────────────────
         //
         // loadWithResult() is the advanced alternative to load(). While load() silently
         // returns null on any failure, loadWithResult() always returns a result object
@@ -590,13 +599,12 @@ public class _19_AdvancedServer {
         // This pattern prevents accidental data loss and makes certificate problems
         // visible immediately instead of silently failing at connection time.
         for (UaServerCertificate cert : certs) {
-            UaCertificateLoadResult<UaServerCertificate> result =
-                    UaServerCertificate.loadWithResult(
-                            cert.getPkiBase(), cert.getAlias(),
-                            cert.getPassword(), cert.getRole());
+            // Load in place so each certificate object keeps its identity (the same instance is
+            // handed to config.setDefaultHttpsCertificate below).
+            UaCertificateLoadResult<UaServerCertificate> result = cert.loadWithResultInPlace();
 
             // Certificate loaded successfully and still valid -- nothing to do.
-            if (result.isSuccess() && result.getCertificate().checkValidity())
+            if (result.isSuccess() && cert.checkValidity())
                 continue;
 
             // Determine the reason: either a load failure or an expired certificate.
@@ -609,14 +617,14 @@ public class _19_AdvancedServer {
                 case NOT_FOUND:
                 case DIRECTORY_NOT_FOUND:
                     // First run or PKI directory does not exist yet.
-                    // This is the normal case â€” create a new self-signed certificate.
+                    // This is the normal case — create a new self-signed certificate.
                     System.out.println("  [CERT] Creating new certificate: " + cert.getAlias());
                     cert.build(true);
                     break;
 
                 case WRONG_PASSWORD:
                     // The certificate file exists but cannot be decrypted.
-                    // Do NOT overwrite â€” the existing certificate may still be trusted
+                    // Do NOT overwrite — the existing certificate may still be trusted
                     // by connected clients. Fix the password in createConfig() first.
                     throw new IllegalStateException(
                             "Wrong password for certificate '" + cert.getAlias() + "'.\n" +
@@ -625,7 +633,7 @@ public class _19_AdvancedServer {
 
                 case KEY_FILE_NOT_FOUND:
                     // The certificate exists but the private key file is missing.
-                    // The key cannot be recovered â€” delete the certificate manually
+                    // The key cannot be recovered — delete the certificate manually
                     // and restart the server to generate a new key pair.
                     throw new IllegalStateException(
                             "Private key missing for certificate '" + cert.getAlias() + "'.\n" +
@@ -638,7 +646,7 @@ public class _19_AdvancedServer {
                     // Overwrite with a new certificate and log a warning so the
                     // administrator knows the old certificate was replaced.
                     System.err.println("  [CERT] Warning: certificate '" + cert.getAlias()
-                            + "' is corrupt â€” rebuilding.");
+                            + "' is corrupt — rebuilding.");
                     System.err.println("  Details: " + result.getFailureMessage());
                     cert.build(true);
                     break;
@@ -651,7 +659,7 @@ public class _19_AdvancedServer {
                         System.out.println("  [CERT] Certificate expired, rebuilding: " + cert.getAlias());
                     else
                         System.err.println("  [CERT] Unexpected load error for '" + cert.getAlias()
-                                + "': " + result.getFailureMessage() + " â€” rebuilding.");
+                                + "': " + result.getFailureMessage() + " — rebuilding.");
                     cert.build(true);
                     break;
             }
@@ -660,7 +668,7 @@ public class _19_AdvancedServer {
         // All certificates are now ready. Build the store and hand it to the configuration.
         // UaServer.start() will use it to set up the secure channel and
         // create the PKI directory structure (trusted/, rejected/, issuers/).
-        UaServerCertificateStore store = new UaServerCertificateStore("./pki", certs);
+        UaServerCertificateStore store = UaServerCertificateStore.load("./pki", certs);
         config.setCertificateStore(store);
         return config;
     }

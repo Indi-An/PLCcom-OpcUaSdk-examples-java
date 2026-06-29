@@ -32,7 +32,8 @@ import java.util.*;
 
 public class _17_DynamicNodes {
 
-    public static void main(String[] args) throws Exception {
+    @SuppressWarnings("unused")
+	public static void main(String[] args) throws Exception {
 
         PLCcomConsole.open("Workshop 17 - Dynamic Nodes", 1000);
 
@@ -132,7 +133,7 @@ public class _17_DynamicNodes {
             // =============================================================================
             UaFolder plant = server.createFolder("Plant", UaRolePermissions.WITHOUT_RESTRICTIONS);
             UaFolder line1 = server.createFolder(plant, "Line1", UaRolePermissions.WITHOUT_RESTRICTIONS);
-            UaVariable<Double> temperature = server.createVariable(line1, "Temperature", UaRolePermissions.WITHOUT_RESTRICTIONS, Double.class, 22.0, false);
+			UaVariable<Double> temperature = server.createVariable(line1, "Temperature", UaRolePermissions.WITHOUT_RESTRICTIONS, Double.class, 22.0, false);
 
             System.out.println("╔══════════════════════════════════════════════════════════════╗");
             System.out.println("║  Step 1/5 — Initial address space                            ║");
@@ -413,17 +414,20 @@ public class _17_DynamicNodes {
 
         // ── Certificate Store ─────────────────────────────────────────────────
         // Build the certificate store: one APPLICATION cert for the OPC UA secure channel,
-        // plus one HTTPS cert per opc.https:// hostname derived from the base addresses.
+        // plus one default HTTPS certificate presented at every opc.https TLS handshake.
         // load() tries to load all certs from disk; getMissingOrExpired() returns any
         // that are missing or expired so they can be rebuilt individually.
         java.util.List<UaServerCertificate> certs = new java.util.ArrayList<>();
         certs.add(new UaServerCertificate("./pki", "secretpassword", "PLCcom_Workshop_17",
                 config.getApplicationUri(), 720, "Indi.An GmbH",
                 UaServerCertificate.CertificateRole.APPLICATION));
-        for (String host : UaServerCertificateStore.extractHttpsHostnames(config.getBaseAddresses()))
-            certs.add(new UaServerCertificate("./pki", "secretpassword", host,
-                    "urn:" + host + ":https", 720, "Indi.An GmbH",
-                    UaServerCertificate.CertificateRole.HTTPS));
+        // One default HTTPS certificate for all opc.https ports. The SDK presents it at the
+        // TLS handshake for any opc.https port that has no specifically assigned certificate.
+        // To serve an official domain certificate on a port, create another HTTPS certificate
+        // and assign it: config.assignHttpsCertificateToPort(port, cert).
+        UaServerCertificate httpsDefault = new UaServerCertificate("./pki", "secretpassword", "https-default", "urn:https-default:https", 720, "Indi.An GmbH", UaServerCertificate.CertificateRole.HTTPS);
+        certs.add(httpsDefault);
+        config.setDefaultHttpsCertificate(httpsDefault);
 
         // Try to load all certificates from disk into the store.
         // Certificates that are missing or cannot be read remain in the store
@@ -443,6 +447,7 @@ public class _17_DynamicNodes {
         // Hand the fully populated store to the configuration.
         // UaServer.start() will use it to set up the secure channel and
         // create the PKI directory structure (trusted/, rejected/, issuers/).
+
         config.setCertificateStore(store);
         return config;
     }
