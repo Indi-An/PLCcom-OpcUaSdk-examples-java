@@ -6,7 +6,7 @@
 
     <groupId>com.indi-an.plccom.examples</groupId>
     <artifactId>plccom-opc-ua-sdk-examples-java</artifactId>
-    <version>10.5.5</version>
+    <version>10.6.2</version>
     <packaging>pom</packaging>
 
     <name>PLCcom OPC UA SDK for Java - Workshop Examples</name>
