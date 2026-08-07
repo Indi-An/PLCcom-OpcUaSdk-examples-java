@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.indi-an.plccom.examples</groupId>
     <artifactId>plccom-opc-ua-examples-java</artifactId>
-    <version>10.6.2</version>
+    <version>10.7.2</version>
     <name>PLCcom OPC UA SDK - Java Examples</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

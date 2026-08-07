@@ -534,7 +534,7 @@ public class _14_VariablesAndArrays {
 
         // Hand the fully populated store to the configuration.
         // UaServer.start() will use it to set up the secure channel and
-        // create the PKI directory structure (trusted/, rejected/, issuers/).
+        // create the PKI directory structure (trusted/, rejected/, issuer/).
 
         config.setCertificateStore(store);
         return config;

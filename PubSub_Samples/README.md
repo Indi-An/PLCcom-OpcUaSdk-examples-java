@@ -136,7 +136,7 @@ The workshop POM references the PubSub add-on for the release version used by th
 <dependency>
     <groupId>com.indi-an.plccom</groupId>
     <artifactId>plccom-opc-ua-pubsub</artifactId>
-    <version>10.6.2</version>
+    <version>10.7.2</version>
 </dependency>
 ```
 
@@ -164,10 +164,11 @@ The secure MQTT workshops use `mqtts://localhost:8883`. They show broker certifi
 
 In production code you can remove the explicit validation listener and rely on the SDK PKI workflow:
 
-- unknown broker certificates are written to `pki/rejected/`
-- reviewed broker certificates belong in `pki/trusted/`
-- trusted issuer certificates belong in `pki/issuers/`
-- optional own client certificates for mutual TLS live below `pki/own/` and `pki/private/`
+- a broker certificate is accepted when it lies in `pki/trusted/certs/`, or when a CA of its chain lies in `pki/trusted/certs/` or `pki/issuer/certs/`, and every certificate of that chain is within its validity period
+- `pki/issuer/certs/` holds the trusted CA certificates; a CA placed there takes effect on the first connection attempt
+- every refused certificate is copied to `pki/rejected/certs/` and the connection fails - this covers a missing trust anchor as well as an expired or not-yet-valid certificate, so a time-invalid certificate lands there even when its CA lies in `pki/issuer/certs/`
+- to trust a refused certificate, review it in `pki/rejected/certs/` and move it by hand to `pki/trusted/certs/` (this broker) or copy its CA to `pki/issuer/certs/` (every certificate that CA signed); it is then accepted while it is time-valid
+- optional own client certificates for mutual TLS live below `pki/own/certs/` and `pki/own/private/`
 
 Do not unconditionally accept certificates in production applications.
 

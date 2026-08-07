@@ -667,7 +667,7 @@ public class _19_AdvancedServer {
 
         // All certificates are now ready. Build the store and hand it to the configuration.
         // UaServer.start() will use it to set up the secure channel and
-        // create the PKI directory structure (trusted/, rejected/, issuers/).
+        // create the PKI directory structure (trusted/, rejected/, issuer/).
         UaServerCertificateStore store = UaServerCertificateStore.load("./pki", certs);
         config.setCertificateStore(store);
         return config;
