@@ -100,9 +100,13 @@ public class _19_EnableDebugTracing
             System.out.println("╚══════════════════════════════════════════════════════════════╝");
             System.out.println();
 
-            // TODO: Replace with your license credentials from your license e-mail
-            String licenseUser   = "<Enter your UserName here>";
-            String licenseSerial = "<Enter your Serial here>";
+            // Important !!!!!!!!!!!!!!!!!!
+            // Enter your Username + Serial here! Please note: with blank fields the library runs
+            // for 15 minutes during a debug session. Both values can also come
+            // from configuration or an environment variable.
+            // Free trial license (14 days, uninterrupted): https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/
+            String licenseUser   = "";
+            String licenseSerial = "";
 
             // -- Step 1: Configure SLF4J tracing BEFORE connecting ----------------
             // The PLCcom SDK uses SLF4J (Simple Logging Facade for Java) for all

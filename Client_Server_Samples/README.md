@@ -25,14 +25,18 @@ The shared Swing console window helper is provided by the sibling Maven project 
 
 ### 1. Add your license credentials
 
-Each workshop file contains a placeholder for your license credentials:
+Every workshop starts with two empty license fields:
 
 ```java
-String licenseUser   = "<Enter your UserName here>";
-String licenseSerial = "<Enter your Serial here>";
+String licenseUser   = "";
+String licenseSerial = "";
 ```
 
-Replace these with the credentials from your license e-mail. A free trial license is available at the [PLCcom download page](https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/).
+**Left as they are, the workshop runs right away:** with two empty strings the library runs for 15 minutes with the full functional scope during a debug session. When the evaluation period ends, operation stops — an open connection is disconnected and a running server halts. The same applies when a time-limited license expires; the library never terminates your application.
+
+For uninterrupted work, put the credentials from your license e-mail in. Both values can also come from configuration or an environment variable.
+
+For uninterrupted work, generate yourself a free trial license (14 days) at the [PLCcom download page](https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/).
 
 ### 2. Build
 

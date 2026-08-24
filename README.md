@@ -36,7 +36,7 @@ All examples in this repository are released under the **MIT License**. You are 
 The **PLCcom OPC UA SDK** itself is proprietary software and is **NOT** included under the MIT license. To use the library in your own projects you must acquire an appropriate license and accept the EULA. More information: [https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-overview/](https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-overview/)
 
 **Trial License:**
-A free trial license is available at the [PLCcom download page](https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/).
+A free trial license (14 days) is available at the [PLCcom download page](https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/). You can also try the library without any license: pass two empty strings for user name and serial number and it runs for 15 minutes during a debug session.
 
 ---
 
@@ -191,14 +191,27 @@ cd PLCcom-OpcUaSdk-examples-java
 
 ### 2. Add your license credentials
 
-Each workshop file contains a placeholder for your license credentials:
+Every workshop starts with two empty license fields:
 
 ```java
-String licenseUser   = "<Enter your UserName here>";
-String licenseSerial = "<Enter your Serial here>";
+String licenseUser   = "";
+String licenseSerial = "";
 ```
 
-Replace these with the credentials from your license e-mail. A free trial license is available at the [PLCcom download page](https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/).
+**Left as they are, the workshop runs right away:** with two empty strings the library runs for 15 minutes with the full functional scope during a debug session — enough to bring up a connection and read values. So you can start with any workshop before you register.
+
+For uninterrupted work, put the credentials from your license e-mail in:
+
+```java
+String licenseUser   = "your user name";
+String licenseSerial = "your serial number";
+```
+
+Both values can also come from configuration or an environment variable.
+
+When the evaluation period ends, operation stops: an open connection is disconnected and a running server halts. The same applies when a time-limited license expires. The library never terminates your application.
+
+For uninterrupted work, generate yourself a free trial license (14 days) at the [PLCcom download page](https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/).
 
 ### 3. Build
 
