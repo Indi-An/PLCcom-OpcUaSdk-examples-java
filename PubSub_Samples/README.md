@@ -140,7 +140,7 @@ The workshop POM references the PubSub add-on for the release version used by th
 <dependency>
     <groupId>com.indi-an.plccom</groupId>
     <artifactId>plccom-opc-ua-pubsub</artifactId>
-    <version>10.7.2</version>
+    <version>10.10.1</version>
 </dependency>
 ```
 
