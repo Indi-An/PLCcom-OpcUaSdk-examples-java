@@ -180,6 +180,33 @@ Workshop `71 Reverse Connect` pairs with `71 Reverse Connect`.
 - Maven 3.6 or newer
 - Any Java IDE (IntelliJ IDEA, Eclipse, VS Code with Java extension)
 
+## Adding PLCcom to Your Own Project
+
+The example modules already declare these dependencies. To use the SDK in your own Maven
+project, add:
+
+```xml
+<dependency>
+    <groupId>com.indi-an.plccom</groupId>
+    <artifactId>plccom-opc-ua-sdk</artifactId>
+    <version>10.8.1</version>
+</dependency>
+```
+
+The PubSub workshops additionally require the **PLCcom OPC UA PubSub** add-on:
+
+```xml
+<dependency>
+    <groupId>com.indi-an.plccom</groupId>
+    <artifactId>plccom-opc-ua-pubsub</artifactId>
+    <version>10.8.1</version>
+</dependency>
+```
+
+Both artifacts are published on
+[Maven Central](https://central.sonatype.com/namespace/com.indi-an.plccom) — no additional
+repository configuration is required.
+
 ## Getting Started
 
 ### 1. Clone this repository
