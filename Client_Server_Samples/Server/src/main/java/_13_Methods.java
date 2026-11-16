@@ -77,6 +77,15 @@ public class _13_Methods {
         // Free trial license (14 days, uninterrupted): https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/
         String licenseUser   = "";
         String licenseSerial = "";
+        // Leave both fields empty to take the values from the environment
+        // variables PLCCOM_OPCUA_LICENSE_USER and PLCCOM_OPCUA_LICENSE_SERIAL.
+        // A value entered here is used first.
+        if (licenseUser.isEmpty()) {
+            licenseUser = System.getenv().getOrDefault("PLCCOM_OPCUA_LICENSE_USER", "");
+        }
+        if (licenseSerial.isEmpty()) {
+            licenseSerial = System.getenv().getOrDefault("PLCCOM_OPCUA_LICENSE_SERIAL", "");
+        }
 
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
         System.out.println("║  PLCcom OPC UA Server SDK - Workshop 13: Methods             ║");
@@ -456,7 +465,8 @@ public class _13_Methods {
         }
         // Encoding byte (1 = binary body)
         buf.get();
-        // Body length
+        // Body length (Int32)
+        buf.getInt();
         // Decode DataStructure_Two fields: int, string, int
         int e1 = buf.getInt();
         String e2 = readUaString(buf);

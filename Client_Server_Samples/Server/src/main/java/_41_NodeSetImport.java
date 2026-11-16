@@ -48,6 +48,15 @@ public class _41_NodeSetImport {
         // Free trial license (14 days, uninterrupted): https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/
         String licenseUser   = "";
         String licenseSerial = "";
+        // Leave both fields empty to take the values from the environment
+        // variables PLCCOM_OPCUA_LICENSE_USER and PLCCOM_OPCUA_LICENSE_SERIAL.
+        // A value entered here is used first.
+        if (licenseUser.isEmpty()) {
+            licenseUser = System.getenv().getOrDefault("PLCCOM_OPCUA_LICENSE_USER", "");
+        }
+        if (licenseSerial.isEmpty()) {
+            licenseSerial = System.getenv().getOrDefault("PLCCOM_OPCUA_LICENSE_SERIAL", "");
+        }
 
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
         System.out.println("║  PLCcom OPC UA Server SDK - Workshop 41: NodeSet Import      ║");
@@ -104,13 +113,14 @@ public class _41_NodeSetImport {
             //     ns=3+ Additional namespaces (registered via <NamespaceUris> in the XML)
             //
             //   Rules for authoring NodeSet XML files:
-            //     1. Namespace indices in the XML are ABSOLUTE server indices.
-            //        ns=2 in the file means ns=2 on the server. ns=3 means ns=3.
+            //     1. Namespace indices in the XML count in its <NamespaceUris>, as in
+            //        every standard NodeSet2 file: ns=1 is the first URI listed there,
+            //        ns=2 the second. The server maps each URI to its own index.
             //     2. Every namespace used in the file (except ns=0) MUST be declared
-            //        in <NamespaceUris>. The server application namespace (ns=2) must
-            //        also be listed if nodes use it.
-            //     3. If a namespace referenced by a node is NOT declared in
-            //        <NamespaceUris>, the node falls back to ns=2.
+            //        in <NamespaceUris>. To put nodes into the server application
+            //        namespace (ns=2), list its URI (config.NamespaceUri) there.
+            //     3. A file that uses an undeclared namespace index, or a node that
+            //        already exists on the server, is refused; nothing is imported.
             //     4. AccessLevel="3" (CurrentRead | CurrentWrite) must be set explicitly
             //        on writable UAVariable nodes. Without it, the OPC UA spec default
             //        is ReadOnly (Part 6, Table F.8).
@@ -120,17 +130,23 @@ public class _41_NodeSetImport {
             // ── Sample NodeSet ─────────────────────────────────────────────────────
             //
             // PLCcom_Workshop_NodeSet.xml is included as a resource in this project.
-            // It defines two namespaces:
-            //   ns=2  Server App Namespace → SensorType, TempSensor1, PressureSensor1
-            //   ns=3  urn:plccom:workshop:nodeset → MotorType, Motor1, Motor2
+            // It defines two namespaces, ns=1 and ns=2 in the file:
+            //   ns=1  http://indi-an.com/opcua/workshop/nodeset-import
+            //         → SensorType, TempSensor1, PressureSensor1
+            //   ns=2  urn:plccom:workshop:nodeset → MotorType, Motor1, Motor2
+            // The first URI is the application namespace of this server (see
+            // createConfig), so these nodes land in ns=2. The second URI is new to the
+            // server and gets the next free index (ns=3); the output below shows it.
             //
             // Types:
-            //   SensorType (ns=2) - Value (Double), Unit (String), InAlarm (Boolean)
-            //   MotorType  (ns=3) - Speed (Double), Running (Boolean), SerialNumber (String)
+            //   SensorType - Value (Double), Unit (String), InAlarm (Boolean)
+            //   MotorType  - Speed (Double), Running (Boolean), SerialNumber (String)
             // Instances:
-            //   Sensors/ (ns=2) - TempSensor1, PressureSensor1
-            //   Motors/  (ns=3) - Motor1, Motor2
+            //   Sensors/ - TempSensor1, PressureSensor1
+            //   Motors/  - Motor1, Motor2
             String resourceName = "PLCcom_Workshop_NodeSet.xml";
+            String sensorUri    = config.getNamespaceUri();
+            String motorUri     = "urn:plccom:workshop:nodeset";
             InputStream stream = _41_NodeSetImport.class.getClassLoader()
                     .getResourceAsStream(resourceName);
 
@@ -139,11 +155,13 @@ public class _41_NodeSetImport {
                 int count = server.importNodeSet(stream);
                 System.out.println("  Imported " + count + " nodes successfully");
                 System.out.println();
+                int sensorNs = server.getNamespaceIndex(sensorUri);
+                int motorNs  = server.getNamespaceIndex(motorUri);
                 System.out.println("  Nodes imported:");
-                System.out.println("    Types    -> Types/ObjectTypes/SensorType  (ns=2)");
-                System.out.println("    Types    -> Types/ObjectTypes/MotorType   (ns=3)");
-                System.out.println("    Instance -> Objects/Sensors/TempSensor1, PressureSensor1  (ns=2)");
-                System.out.println("    Instance -> Objects/Motors/Motor1, Motor2                (ns=3)");
+                System.out.println("    Types    -> Types/ObjectTypes/SensorType  (ns=" + sensorNs + ")");
+                System.out.println("    Types    -> Types/ObjectTypes/MotorType   (ns=" + motorNs + ")");
+                System.out.println("    Instance -> Objects/Sensors/TempSensor1, PressureSensor1  (ns=" + sensorNs + ")");
+                System.out.println("    Instance -> Objects/Motors/Motor1, Motor2                (ns=" + motorNs + ")");
             } else {
                 System.out.println("  ERROR: '" + resourceName + "' not found in resources.");
                 System.out.println("  Make sure PLCcom_Workshop_NodeSet.xml is in src/main/resources.");

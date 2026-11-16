@@ -17,7 +17,7 @@ The shared Swing console window helper is provided by the sibling Maven project 
 
 ## Requirements
 
-- Java 11 or newer
+- Java 11 to 27
 - Maven 3.6 or newer
 - Any Java IDE (IntelliJ IDEA, Eclipse, NetBeans, VS Code)
 
@@ -90,6 +90,10 @@ Many client workshops are designed to work with a specific server workshop. Star
 **Reverse Connect**
 
 - `71 Reverse Connect` pairs with `71 Reverse Connect`.
+
+**Discovery**
+
+- `81 Local Discovery Server` is found by client `11 Discover Server`; a server of workshop `11 Simple Server` registers with it. The start order is described in the server workshop README (group 8).
 
 ---
 

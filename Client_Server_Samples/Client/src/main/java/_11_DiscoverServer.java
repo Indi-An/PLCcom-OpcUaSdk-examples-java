@@ -56,6 +56,7 @@ public class _11_DiscoverServer implements CertificateValidator {
             System.out.println("║    * How to discover all endpoints incl. all transports      ║");
             System.out.println("║    * How to provide a CertificateValidator for opc.https     ║");
             System.out.println("║    * How to sort endpoints by security level                 ║");
+            System.out.println("║    * How to ask for the known servers (FindServers)          ║");
             System.out.println("║    * How to read endpoint details (URL, security mode,       ║");
             System.out.println("║      security policy, security level)                        ║");
             System.out.println("║                                                              ║");
@@ -118,6 +119,22 @@ public class _11_DiscoverServer implements CertificateValidator {
             counter = 0;
             for (EndpointDescription ep : allEndpoints) {
                 System.out.println("  [" + counter++ + "] " + OpcUaDisplayUtils.toDisplayString(ep));
+            }
+
+            // -- Step 6: Ask for the servers known at this address -------------
+            // findServer() calls FindServers (anonymous, no session). An ordinary
+            // server answers with itself. A Local Discovery Server (Server Workshop 81)
+            // answers with every server that has registered with it: the application
+            // name, the application URI and the discovery URLs to connect to.
+            System.out.println();
+            System.out.println("  Servers known at this address (FindServers):");
+            System.out.println();
+
+            ApplicationDescription[] servers = UaClient.findServer(serverUrl);
+            counter = 0;
+            for (ApplicationDescription app : servers) {
+                System.out.println("  [" + counter++ + "] " + app.getApplicationName().getText()
+                        + "  " + app.getApplicationUri() + "  " + java.util.Arrays.toString(app.getDiscoveryUrls()));
             }
 
         } catch (Exception e) {

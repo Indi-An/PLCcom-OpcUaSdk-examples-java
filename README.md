@@ -58,6 +58,7 @@ PLCcom OPC UA SDK is a highly optimized and modern SDK designed specifically for
   - Complex / Structured Data Types
   - Simple Events
   - Reverse Connect
+  - Local Discovery Server
   - NodeSet2 XML Import
 - Extensive workshops for Java included
 
@@ -138,6 +139,10 @@ For a full list of supported features and detailed documentation, visit the [off
 - `51 Logging` - Configure server-side logging and route it to your framework.
 - `71 Reverse Connect` - Use server-initiated connections through firewalls.
 
+**Discovery**
+
+- `81 Local Discovery Server` - Run a Local Discovery Server: servers register with it and clients find them.
+
 ### PubSub Workshops
 
 - `11 / 12 UADP Unicast` - Publish and receive UADP DataSetMessages via OPC UA UDP unicast with PubSub discovery.
@@ -147,6 +152,8 @@ For a full list of supported features and detailed documentation, visit the [off
 - `23 / 24 Secure MQTT UADP` - Use MQTT over TLS with UADP binary encoding and broker certificate validation.
 - `31 / 32 MQTT JSON` - Publish and receive OPC UA PubSub JSON data messages through MQTT.
 - `33 / 34 Secure MQTT JSON` - Use MQTT over TLS with JSON encoding and broker certificate validation.
+- `43 Key Server` - Run a Security Key Service on an OPC UA server: encrypted channel only, users with roles, key rotation.
+- `44 / 45 Secure Publisher / Subscriber with Key Pull` - Publish and receive secured UADP messages with keys fetched from the key server and refreshed at every key change. Start `43` first.
 
 The PubSub workshops live in `PubSub_Samples` and use the PubSub add-on Maven dependency. For MQTT workshops, use a broker on `mqtt://localhost:1883`; for secure MQTT workshops, use a TLS-enabled broker on `mqtts://localhost:8883`.
 
@@ -172,11 +179,14 @@ Client workshops `31 Incoming Alarms` to `33 Alarm Conditions` pair with `21 Ala
 **Reverse Connect**  
 Workshop `71 Reverse Connect` pairs with `71 Reverse Connect`.
 
+**Discovery**  
+Workshop `81 Local Discovery Server` is found by client workshop `11 Discover Server`; a server of workshop `11 Simple Server` registers with it (start order: server workshop README, group 8).
+
 ---
 
 ## Requirements
 
-- Java 11 or newer
+- Java 11 to 27
 - Maven 3.6 or newer
 - Any Java IDE (IntelliJ IDEA, Eclipse, VS Code with Java extension)
 
@@ -189,7 +199,7 @@ project, add:
 <dependency>
     <groupId>com.indi-an.plccom</groupId>
     <artifactId>plccom-opc-ua-sdk</artifactId>
-    <version>10.8.1</version>
+    <version>11.1.1</version>
 </dependency>
 ```
 
@@ -199,7 +209,7 @@ The PubSub workshops additionally require the **PLCcom OPC UA PubSub** add-on:
 <dependency>
     <groupId>com.indi-an.plccom</groupId>
     <artifactId>plccom-opc-ua-pubsub</artifactId>
-    <version>10.8.1</version>
+    <version>11.1.1</version>
 </dependency>
 ```
 

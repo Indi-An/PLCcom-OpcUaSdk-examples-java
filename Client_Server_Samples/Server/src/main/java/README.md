@@ -102,6 +102,32 @@ Events propagate upward automatically: Machine1 → Plant → Objects → Server
 
 ---
 
+## 8 Discovery
+
+| Class | What you will learn |
+|-------|---------------------|
+| `_81_Server_LocalDiscoveryServer` | Run a Local Discovery Server (`UaDiscoveryServer`): servers register with it, clients find them with FindServers and GetEndpoints; you confirm each certificate |
+
+The Local Discovery Server is the telephone book of a computer. It has no address space and no sessions, only the discovery services. Registrations come only from servers on the same computer, through a secured channel.
+
+**Start order**
+
+1. Start `_81_Server_LocalDiscoveryServer`. It listens on `opc.tcp://localhost:4840/UADiscovery`. If another Local Discovery Server already uses port 4840 on your computer, start it with `--port 4850` (any free port).
+2. The server must trust the certificate of the Local Discovery Server. Copy the certificate file in `lds/pki/own/certs` (the workshop prints the full path) to the `pki/trusted/certs` folder of the server **before** you start the server. A server checks the certificate of the Local Discovery Server with its PKI folder, like the certificate of a client.
+3. Start a server that registers, for example `_11_SimpleServer` with these two lines in its `UaServerConfiguration` (use your port):
+
+   ```java
+   config.setRegisterWithDiscoveryServer(true);
+   config.setDiscoveryServerUrl("opc.tcp://localhost:4840");
+   ```
+
+4. The Local Discovery Server reports the certificate of the server and asks whether you trust it. Answer `y`. The server registers within a few seconds.
+5. Run client workshop `_11_DiscoverServer` with the address of the Local Discovery Server as `serverUrl`. Its last step (`UaClient.findServer`, the FindServers service) lists the Local Discovery Server and your server. A server ends its registration when it stops.
+
+**Default endpoint:** `opc.tcp://localhost:4840/UADiscovery` (option `--port <number>`)
+
+---
+
 ## Licensing Information
 
 **Examples License:**

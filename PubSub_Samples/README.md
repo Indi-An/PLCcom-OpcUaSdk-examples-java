@@ -19,14 +19,14 @@ The shared Swing console window helper is provided by the sibling Maven project 
 
 ## Requirements
 
-- Java 11 or newer
+- Java 11 to 27
 - Maven 3.6 or newer
 - Any Java IDE (IntelliJ IDEA, Eclipse, NetBeans, VS Code)
 - A valid PLCcom OPC UA SDK / PubSub license or trial license
 - For MQTT workshops: an MQTT broker on `mqtt://localhost:1883`
 - For secure MQTT workshops: a TLS-enabled MQTT broker on `mqtts://localhost:8883`
 
-The workshop code is compiled with Java 1.8 source/target compatibility, so it remains suitable for Java 8 compatible customer applications while still building cleanly on modern JDKs.
+The workshop code is compiled with Java 11 source/target compatibility and builds on every Java version from 11 to 27.
 
 ## Getting Started
 
@@ -103,6 +103,10 @@ Subscriber: `_34_SecureMqttTransportJsonSubscriber`
 Publisher: `_33_SecureMqttTransportJsonPublisher`  
 Focus: MQTT over TLS with JSON encoding and broker certificate validation.
 
+**Key service (Security Key Service, SKS)**  
+Start first: `_43_KeyServer`, then `_44_SecurePublisherKeyPull` (publisher) and `_45_SecureSubscriberKeyPull` (subscriber).  
+Focus: the key server hands out the keys of a SecurityGroup over an encrypted OPC UA channel; the publisher and the subscriber fetch them and follow every key change. The key server listens on `127.0.0.1:48440`, offers no anonymous access and accepts a client certificate only after you moved it to `pki/trusted/certs`. Passwords come from `PLCCOM_SKS_READER_PASSWORD`, `PLCCOM_SKS_ADMIN_PASSWORD` and `PLCCOM_PKI_PASSWORD` (or are typed, at least 10 characters); nothing secret is in the source and keys are never printed.
+
 ---
 
 ## Workshop Overview
@@ -130,6 +134,12 @@ Focus: MQTT over TLS with JSON encoding and broker certificate validation.
 - `_33_SecureMqttTransportJsonPublisher` publishes OPC UA PubSub JSON messages through MQTT over TLS.
 - `_34_SecureMqttTransportJsonSubscriber` receives secure MQTT JSON messages and validates the broker certificate.
 
+**Key service (SKS)**
+
+- `_43_KeyServer` runs a Security Key Service on an OPC UA server: encrypted channel only, users with roles, key rotation, a list of who fetched which keys (never the keys).
+- `_44_SecurePublisherKeyPull` publishes secured UADP messages with keys fetched from the key server (`GetSecurityKeys`) and refreshed before they run out.
+- `_45_SecureSubscriberKeyPull` receives and decrypts them with keys fetched from the same key server.
+
 ---
 
 ## Maven Dependency
@@ -140,7 +150,7 @@ The workshop POM references the PubSub add-on for the release version used by th
 <dependency>
     <groupId>com.indi-an.plccom</groupId>
     <artifactId>plccom-opc-ua-pubsub</artifactId>
-    <version>10.10.1</version>
+    <version>11.1.1</version>
 </dependency>
 ```
 
@@ -163,6 +173,8 @@ Example:
 ```bash
 mvn exec:java -Dexec.mainClass=_22_MqttUadpSubscriber -Dexec.args=mqtt3
 ```
+
+The MQTT data workshops use the MQTT topic tree of OPC UA Part 14 (7.3.4.7): `<Prefix>/<Encoding>/<data|metadata>/<PublisherId>/<WriterGroup>/<DataSetWriter>`. The WriterGroup is named after the publisher (`<publisher name>_WriterGroup`) and the DataSetWriter after the DataSet, so the UADP data of `_21` goes to `opcua/uadp/data/<PublisherId>/MotorPublisher_WriterGroup/MotorData`. The secure MQTT workshops (`_23/_24`, `_33/_34`) use the prefix `opcua-tls`, as the .NET TLS workshops do, so their topics do not mix with those of the plain workshops on the same broker. Java and .NET workshops interoperate without further switches.
 
 The secure MQTT workshops use `mqtts://localhost:8883`. They show broker certificate validation directly in the workshop code. The validation listener receives the complete broker certificate chain and returns `true` to accept or `false` to reject the TLS validation call.
 

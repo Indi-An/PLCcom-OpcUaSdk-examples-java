@@ -56,6 +56,15 @@ public final class _23_SecureMqttTransportUadpPublisher {
             // Free trial license (14 days, uninterrupted): https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/
             String licenseUser = "";
             String licenseSerial = "";
+            // Leave both fields empty to take the values from the environment
+            // variables PLCCOM_OPCUA_LICENSE_USER and PLCCOM_OPCUA_LICENSE_SERIAL.
+            // A value entered here is used first.
+            if (licenseUser.isEmpty()) {
+                licenseUser = System.getenv().getOrDefault("PLCCOM_OPCUA_LICENSE_USER", "");
+            }
+            if (licenseSerial.isEmpty()) {
+                licenseSerial = System.getenv().getOrDefault("PLCCOM_OPCUA_LICENSE_SERIAL", "");
+            }
 
             // MQTT workshops can be started with an optional protocol argument.
             // Without an argument the helper uses the default version documented
@@ -104,6 +113,10 @@ public final class _23_SecureMqttTransportUadpPublisher {
                     // endpoint URL. For UDP this is an opc.udp:// URL; for MQTT
                     // it is the broker URL used by the MQTT adapter.
                     .WithTransport(PubSubTransportMode.BrokerMqttUadp, "mqtts://localhost:8883")
+                    // mqttTopicPrefix is the first level of every MQTT topic. The TLS
+                    // workshops use "opcua-tls" (as the .NET TLS workshops do), so they
+                    // do not meet the messages of the plain workshops on the same broker.
+                    .mqttTopicPrefix("opcua-tls")
                     // WithPublishingInterval defines the cyclic publisher tick.
                     // The publisher checks the data store every 1000 ms and
                     // sends a PubSub message when the data set is due.

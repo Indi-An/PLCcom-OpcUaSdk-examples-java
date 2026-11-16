@@ -53,6 +53,15 @@ public final class _31_MqttJsonPublisher {
             // Free trial license (14 days, uninterrupted): https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/
             String licenseUser = "";
             String licenseSerial = "";
+            // Leave both fields empty to take the values from the environment
+            // variables PLCCOM_OPCUA_LICENSE_USER and PLCCOM_OPCUA_LICENSE_SERIAL.
+            // A value entered here is used first.
+            if (licenseUser.isEmpty()) {
+                licenseUser = System.getenv().getOrDefault("PLCCOM_OPCUA_LICENSE_USER", "");
+            }
+            if (licenseSerial.isEmpty()) {
+                licenseSerial = System.getenv().getOrDefault("PLCCOM_OPCUA_LICENSE_SERIAL", "");
+            }
 
             // MQTT workshops can be started with an optional protocol argument.
             // Without an argument the helper uses the default version documented
@@ -89,10 +98,13 @@ public final class _31_MqttJsonPublisher {
                             // NodeId in the publisher data store. The workshop
                             // writes values by field name; the NodeId keeps the
                             // data model compatible with OPC UA semantics.
-                            .AddField("Voltage", new NodeId(2, 3001))
-                            .AddField("Current", new NodeId(2, 3002))
-                            .AddField("Power", new NodeId(2, 3003))
-                            .AddField("Energy", new NodeId(2, 3004))
+                            // The declared type (Double.class) makes the JSON message carry
+                            // the plain value ("Voltage":230.1); a field without a type counts
+                            // as Variant and is written as {"UaType":11,"Value":230.1}.
+                            .AddField("Voltage", new NodeId(2, 3001), Double.class)
+                            .AddField("Current", new NodeId(2, 3002), Double.class)
+                            .AddField("Power", new NodeId(2, 3003), Double.class)
+                            .AddField("Energy", new NodeId(2, 3004), Double.class)
                             // KeyFrameCount controls the DeltaFrame mechanism:
                             // every 10th message is a full KeyFrame; messages in
                             // between may contain only changed values.

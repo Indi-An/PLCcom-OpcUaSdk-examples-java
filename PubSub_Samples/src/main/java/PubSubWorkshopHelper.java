@@ -48,7 +48,18 @@ final class PubSubWorkshopHelper {
         if (reader == null) {
             return false;
         }
-        return reader.ready();
+        // Only a line end stops the workshop. Other characters that are waiting,
+        // for example from a redirected input, are skipped.
+        while (reader.ready()) {
+            int c = reader.read();
+            if (c < 0) {
+                return false;
+            }
+            if (c == '\n' || c == '\r') {
+                return true;
+            }
+        }
+        return false;
     }
 
     static void closeConsole() {

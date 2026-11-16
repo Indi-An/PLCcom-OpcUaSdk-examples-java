@@ -46,6 +46,15 @@ public class _51_Logging {
         // Free trial license (14 days, uninterrupted): https://www.indi-an.com/en/plccom/opc-ua-sdk/opcua-download/
         String licenseUser   = "";
         String licenseSerial = "";
+        // Leave both fields empty to take the values from the environment
+        // variables PLCCOM_OPCUA_LICENSE_USER and PLCCOM_OPCUA_LICENSE_SERIAL.
+        // A value entered here is used first.
+        if (licenseUser.isEmpty()) {
+            licenseUser = System.getenv().getOrDefault("PLCCOM_OPCUA_LICENSE_USER", "");
+        }
+        if (licenseSerial.isEmpty()) {
+            licenseSerial = System.getenv().getOrDefault("PLCCOM_OPCUA_LICENSE_SERIAL", "");
+        }
 
         System.out.println("╔══════════════════════════════════════════════════════════════╗");
         System.out.println("║  PLCcom OPC UA Server SDK - Workshop 51: Logging             ║");

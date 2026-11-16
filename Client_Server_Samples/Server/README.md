@@ -19,6 +19,7 @@ All Java source files are located in `src/main/java/` — see [`src/main/java/RE
 | **5 Logging** | 51 Logging |
 | **6 Simple Events** | 61 Simple Events |
 | **7 Reverse Connect** | 71 Reverse Connect |
+| **8 Discovery** | 81 Local Discovery Server |
 
 ---
 
