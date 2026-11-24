@@ -150,7 +150,7 @@ The workshop POM references the PubSub add-on for the release version used by th
 <dependency>
     <groupId>com.indi-an.plccom</groupId>
     <artifactId>plccom-opc-ua-pubsub</artifactId>
-    <version>11.1.1</version>
+    <version>11.2.1</version>
 </dependency>
 ```
 
@@ -201,6 +201,15 @@ Workshop errors are printed as concise messages by default. For a full Java stac
 ```bash
 -Dplccom.pubsub.workshop.verboseErrors=true
 ```
+
+---
+
+## Free tools built with this SDK
+
+Free Windows tools for testing and commissioning, built with this library:
+- PLCcom Opc Ua PubSub Publisher: https://www.indi-an.com/en/plccom/opc-ua-sdk/opc-ua-pubsub-publisher/
+- PLCcom Opc Ua PubSub Subscriber: https://www.indi-an.com/en/plccom/opc-ua-sdk/opc-ua-pubsub-subscriber/
+- PLCcom Opc Ua PubSub Key Server: https://www.indi-an.com/en/plccom/opc-ua-sdk/opc-ua-pubsub-key-server/
 
 ---
 

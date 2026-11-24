@@ -27,6 +27,15 @@ This makes your code **readable, maintainable, and independent of server-specifi
 
 ---
 
+## Free tools built with this SDK
+
+Free Windows tools for testing and commissioning, built with this library:
+- PLCcom Opc Ua Explorer: https://www.indi-an.com/en/plccom/opc-ua-sdk/opc-ua-explorer/
+- PLCcom Opc Ua Simulation Server: https://www.indi-an.com/en/plccom/opc-ua-sdk/opc-ua-simulation-server/
+- PLCcom Opc Ua Local Discovery Server: https://www.indi-an.com/en/plccom/opc-ua-sdk/opc-ua-local-discovery-server/
+
+---
+
 ## Licensing Information
 
 **Examples License:**
@@ -199,7 +208,7 @@ project, add:
 <dependency>
     <groupId>com.indi-an.plccom</groupId>
     <artifactId>plccom-opc-ua-sdk</artifactId>
-    <version>11.1.1</version>
+    <version>11.2.1</version>
 </dependency>
 ```
 
@@ -209,7 +218,7 @@ The PubSub workshops additionally require the **PLCcom OPC UA PubSub** add-on:
 <dependency>
     <groupId>com.indi-an.plccom</groupId>
     <artifactId>plccom-opc-ua-pubsub</artifactId>
-    <version>11.1.1</version>
+    <version>11.2.1</version>
 </dependency>
 ```
 

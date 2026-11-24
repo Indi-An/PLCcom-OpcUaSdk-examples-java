@@ -97,6 +97,15 @@ Many client workshops are designed to work with a specific server workshop. Star
 
 ---
 
+## Free tools built with this SDK
+
+Free Windows tools for testing and commissioning, built with this library:
+- PLCcom Opc Ua Explorer: https://www.indi-an.com/en/plccom/opc-ua-sdk/opc-ua-explorer/
+- PLCcom Opc Ua Simulation Server: https://www.indi-an.com/en/plccom/opc-ua-sdk/opc-ua-simulation-server/
+- PLCcom Opc Ua Local Discovery Server: https://www.indi-an.com/en/plccom/opc-ua-sdk/opc-ua-local-discovery-server/
+
+---
+
 ## ⚠️ Important Safety Notice
 
 The examples in this repository are **for demonstration purposes only** and **must _not_** be used in production, safety-critical, or industrial environments without your own thorough review and validation.
